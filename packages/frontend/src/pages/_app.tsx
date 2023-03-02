@@ -6,8 +6,10 @@ import { CacheProvider } from '@emotion/react'
 import { darkTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import '@rainbow-me/rainbowkit/styles.css'
 import { env } from '@shared/environment'
+import { ethereumClient } from '@shared/providers'
 import { chains, wagmiClient } from '@shared/wagmiClient'
 import GlobalStyles from '@styles/GlobalStyles'
+import { Web3Modal } from '@web3modal/react'
 import { DefaultSeo } from 'next-seo'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
@@ -21,6 +23,7 @@ Router.events.on('routeChangeComplete', () => NProgress.done())
 Router.events.on('routeChangeError', () => NProgress.done())
 
 function MyApp({ Component, pageProps }: AppProps) {
+  console.log(wagmiClient.getProvider())
   return (
     <>
       {/* TODO SEO */}
@@ -56,19 +59,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ChakraProvider>
           <DarkMode>
             <GlobalStyles />
-
+            {/* //TODO : WALLET CONNECT */}
             <WagmiConfig client={wagmiClient}>
-              <RainbowKitProvider chains={chains} theme={darkTheme()} coolMode={true}>
-                <BaseLayout>
-                  <Component {...pageProps} />
-                </BaseLayout>
-              </RainbowKitProvider>
+              <BaseLayout>
+                <Component {...pageProps} />
+              </BaseLayout>
             </WagmiConfig>
-
             <HotToastConfig />
           </DarkMode>
         </ChakraProvider>
       </CacheProvider>
+      <Web3Modal projectId="e83a061989116d32873819d49af1e902" ethereumClient={ethereumClient} />
     </>
   )
 }

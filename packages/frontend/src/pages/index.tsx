@@ -4,6 +4,7 @@ import { CenterBody } from '@components/layout/CenterBody'
 import { GreeterContractInteractions } from '@components/web3/GreeterContractInteractions'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import type { NextPage } from 'next'
+import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
 
 const HomePage: NextPage = () => {
@@ -16,7 +17,8 @@ const HomePage: NextPage = () => {
         {/* Title */}
         <HomePageTitle />
         {/* Rainbowkit Connect Button */}
-        <ConnectButton />
+        {/* <ConnectButton /> */}
+        <Web3Button />
         {/* Greeter.sol Contract Interactions
         <GreeterContractInteractions /> */}
       </CenterBody>
