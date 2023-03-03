@@ -10,13 +10,14 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
 import Image from 'next/image'
 import { convertUnixToDatetime, getTimestampInSeconds } from '@shared/helpers'
 
 export const TradeBox: FC = () => {
-  const [distance, setDistance] = useState(0)
+  const [distances, setDistances] = useState(new Map())
+
   const poolList = [
     {
       name: 'Blue Bird Yatch Club Pool',
@@ -71,16 +72,23 @@ export const TradeBox: FC = () => {
   const hoverStyle = {
     border: '4px solid white',
   }
+  useEffect(() => {
+    console.log(distances, 'hihihihi')
+  }, [distances])
 
   return (
     <>
       <Flex flexFlow="wrap">
-        {/* TODO:TIMER Not yet done */}
+        {/* TODO:TIMER Not yet don*/}
         {poolList.map((pool) => {
           // Update the count down every 1 second
-          const x = setInterval(function () {
-            const res = convertUnixToDatetime(pool.expired - getTimestampInSeconds())
-            setDistance(res)
+          const rn = getTimestampInSeconds()
+          setInterval(function () {
+            const res = convertUnixToDatetime(pool.expired - rn)
+            console.log(res)
+            const oneDistance = distances.set(pool.id, res)
+            setDistances(oneDistance)
+            console.log(distances, distances.get(pool.id))
             // If the count down is finished, write some text
           }, 1000)
           return (
@@ -92,7 +100,7 @@ export const TradeBox: FC = () => {
               borderRadius="13px"
               key={pool.id}
             >
-              <Text>Time left : {distance}</Text>
+              <Text>Time left : {distances.get(pool.id)}</Text>
               <VStack cursor="pointer" onClick={() => console.log('hh')}>
                 <Text fontWeight="700" fontSize="large">
                   {pool.name}
