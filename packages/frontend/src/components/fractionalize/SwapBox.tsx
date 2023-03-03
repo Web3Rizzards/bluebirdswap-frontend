@@ -4,12 +4,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import githubIcon from 'public/icons/github.svg'
 import vercelIcon from 'public/icons/vercel.svg'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import 'twin.macro'
 
 export const SwapBox: FC = () => {
   // TODO: connect with the backend
-  const nftName = 'BAYC #123'
+  const [nftName, setNftName] = useState('#')
+
   const nftList = [
     {
       name: 'BAYC #123',
@@ -20,6 +21,10 @@ export const SwapBox: FC = () => {
       id: 2,
     },
   ]
+  const handleSelectNFT = (e: any) => {
+    const nft = e.target.value
+    setNftName(nft)
+  }
   return (
     <>
       <VStack
@@ -45,7 +50,7 @@ export const SwapBox: FC = () => {
           alignItems="center"
           justifyContent="center"
         >
-          <Select>
+          <Select placeholder="Select NFT" onChange={handleSelectNFT}>
             {nftList.map((nft) => (
               <option value={nft.name} key={nft.id}>
                 {nft.name}

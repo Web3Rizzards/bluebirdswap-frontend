@@ -26,7 +26,10 @@ export const HomeTopBar: FC<Props> = ({ url }) => {
     <>
       <Flex alignItems="center" justifyContent="space-between" padding={6} background="#1E2C37">
         {/* TODO : LOGO */}
-        <Text fontSize="x-large">BLUEBIRD SWAP</Text>
+        <Link href="/">
+          <Text fontSize="x-large">BLUEBIRD SWAP</Text>
+        </Link>
+
         <HStack width="50%" justifyContent="space-between">
           <Link href="/fractionlize">
             <Text sx={url == 'fractionlize' ? SelectedStyles : nonSelectedStyles}>

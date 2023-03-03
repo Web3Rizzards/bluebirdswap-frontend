@@ -94,7 +94,7 @@ export const StakeBox: FC = () => {
                   <option>ETH</option>
                   <option>bbNFT</option>
                 </Select>
-                <Button width="inherit">Swap</Button>
+                <Button width="inherit">Stake</Button>
               </FormControl>
             ) : (
               <></>
