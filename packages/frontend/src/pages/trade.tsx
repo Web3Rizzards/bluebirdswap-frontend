@@ -8,11 +8,11 @@ import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
 import Image from 'next/image'
 
-const HomePage: NextPage = () => {
+const TradePage: NextPage = () => {
   return (
     <>
       {/* Top Bar */}
-      <HomeTopBar url="home" />
+      <HomeTopBar url="trade" />
       {/* <Image src="../landing.svg" width={10} height={10} /> */}
 
       <CenterBody tw="mt-20 mb-10 px-5">
@@ -28,4 +28,4 @@ const HomePage: NextPage = () => {
   )
 }
 
-export default HomePage
+export default TradePage
