@@ -1,5 +1,6 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit'
 import { allChains, chain, Chain, configureChains, createClient } from 'wagmi'
+import { polygon, polygonMumbai } from 'wagmi/chains'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { publicProvider } from 'wagmi/providers/public'
 import { env } from './environment'
@@ -21,24 +22,7 @@ export const getRpcUrl = (chainId: number): string => {
   return env.rpcUrls[chainId as keyof typeof env.rpcUrls]
 }
 
-export const {
-  chains: [, ...chains],
-  provider,
-} = configureChains(
-  Array.from(new Set([chain.mainnet, defaultChain, ...supportedChains])).filter(Boolean) as Chain[],
-  [
-    jsonRpcProvider({
-      rpc: (chain) => {
-        const rpcUrl = getRpcUrl(chain.id)
-        if (!rpcUrl) {
-          throw new Error(`No RPC provided for chain ${chain.id}`)
-        }
-        return { http: rpcUrl }
-      },
-    }),
-    publicProvider(),
-  ],
-)
+export const { chains, provider } = configureChains([polygon], [publicProvider()])
 
 const { connectors } = getDefaultWallets({
   appName: 'bluebirdswap',
