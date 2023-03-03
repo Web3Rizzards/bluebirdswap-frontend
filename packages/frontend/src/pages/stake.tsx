@@ -7,7 +7,7 @@ import type { NextPage } from 'next'
 import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
 import Image from 'next/image'
-import { StakeBox } from '@components/stake/stakeBox'
+import { StakeBox } from '@components/stake/StakeBox'
 
 const StakePage: NextPage = () => {
   return (

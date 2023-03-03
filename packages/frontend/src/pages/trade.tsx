@@ -8,6 +8,7 @@ import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
 import Image from 'next/image'
 import { Exchange } from '@components/exchange/Exchange'
+import { TradeBox } from '@components/trade/TradeBox'
 
 const TradePage: NextPage = () => {
   return (
@@ -17,6 +18,7 @@ const TradePage: NextPage = () => {
       {/* <Image src="../landing.svg" width={10} height={10} /> */}
 
       <CenterBody tw="mt-20 mb-10 px-5">
+        <TradeBox />
         <Exchange
           floorPrice={10}
           strikePrices={[
@@ -31,6 +33,7 @@ const TradePage: NextPage = () => {
           startDate={new Date()}
           endDate={new Date()}
         />
+        {/* Title */}
       </CenterBody>
     </>
   )

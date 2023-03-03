@@ -3,7 +3,6 @@ import { HomeTopBar } from '@components/home/HomeTopBar'
 import { CenterBody } from '@components/layout/CenterBody'
 import type { NextPage } from 'next'
 import 'twin.macro'
-import Image from 'next/image'
 
 const HomePage: NextPage = () => {
   return (

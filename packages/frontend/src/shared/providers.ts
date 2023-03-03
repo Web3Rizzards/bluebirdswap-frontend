@@ -16,7 +16,7 @@ export const wagmiClient = createClient({
     projectId: 'e83a061989116d32873819d49af1e902',
     version: '1',
     appName: 'web3Modal',
-    chains,
+    chains: chains,
   }),
   provider,
 })
