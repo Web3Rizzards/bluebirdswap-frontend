@@ -7,6 +7,7 @@ import type { NextPage } from 'next'
 import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
 import Image from 'next/image'
+import { TradeBox } from '@components/trade/TradeBox'
 
 const TradePage: NextPage = () => {
   return (
@@ -17,12 +18,8 @@ const TradePage: NextPage = () => {
 
       <CenterBody tw="mt-20 mb-10 px-5">
         {/* Title */}
-        <HomePageTitle />
-        {/* Rainbowkit Connect Button */}
-        {/* <ConnectButton /> */}
-        <Web3Button />
-        {/* Greeter.sol Contract Interactions
-        <GreeterContractInteractions /> */}
+
+        <TradeBox />
       </CenterBody>
     </>
   )
