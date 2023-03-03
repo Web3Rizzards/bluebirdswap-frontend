@@ -1,8 +1,6 @@
 import { HomePageTitle } from '@components/home/HomePageTitle'
 import { HomeTopBar } from '@components/home/HomeTopBar'
 import { CenterBody } from '@components/layout/CenterBody'
-import { GreeterContractInteractions } from '@components/web3/GreeterContractInteractions'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import type { NextPage } from 'next'
 import 'twin.macro'
 import Image from 'next/image'
@@ -19,7 +17,6 @@ const HomePage: NextPage = () => {
         <HomePageTitle />
         {/* Rainbowkit Connect Button */}
         {/* <ConnectButton /> */}
-        <ConnectButton />
         {/* Greeter.sol Contract Interactions
         <GreeterContractInteractions /> */}
       </CenterBody>

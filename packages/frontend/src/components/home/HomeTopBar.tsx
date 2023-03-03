@@ -1,4 +1,5 @@
 import { Button, Flex, HStack, Text } from '@chakra-ui/react'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 import Link from 'next/link'
 import { FC } from 'react'
 import 'twin.macro'
@@ -8,7 +9,6 @@ type Props = {
 }
 
 export const HomeTopBar: FC<Props> = ({ url }) => {
-  console.log(url)
   const nonSelectedStyles = {
     fontSize: 'larger',
     fontWeight: '600',
@@ -43,8 +43,7 @@ export const HomeTopBar: FC<Props> = ({ url }) => {
             <Text sx={url == 'claim' ? SelectedStyles : nonSelectedStyles}>Claim</Text>
           </Link>
         </HStack>
-        {/* TODO: Connect Wallet Connect */}
-        <Button>0x123...ABC</Button>
+        <ConnectButton />
       </Flex>
     </>
   )
