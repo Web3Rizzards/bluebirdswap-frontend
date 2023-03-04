@@ -40,3 +40,5 @@ dist
 # coverage
 coverage
 coverage.json
+
+pnpm-lock.yaml
