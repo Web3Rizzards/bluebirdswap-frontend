@@ -38,13 +38,13 @@ type PriceResponse = {
   timestamp: string
 }
 
-export const nftAddress = '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79'
+export const nftAddress = '0xd12C158F9CFf1a252B463F2c419Dca1f92872356'
 export const fractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
-export const grinderAddress = '0x6D6Fe31F932c547AC4ec7359a64C17a4f59D9397'
+export const grinderAddress = '0x6b3e522eD05AD29d8C52f091dBC5A7f9Eec97D4e'
 export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
-export const azukiOptionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
+export const azukiOptionsAddress = '0x548b1d4a67559bF801f35B57a8c0592826a4F56A'
 export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
-export const azukiFractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
+export const azukiFractionalizeAddress = '0x39adf5f19c2da8e4554c6fd55f5d89d7273c6d4e'
 
 export const Exchange: FC<ExchangeProps> = ({
   collectionName,
