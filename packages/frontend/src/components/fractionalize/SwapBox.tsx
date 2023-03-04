@@ -6,25 +6,69 @@ import githubIcon from 'public/icons/github.svg'
 import vercelIcon from 'public/icons/vercel.svg'
 import { FC, useState } from 'react'
 import 'twin.macro'
+import grinderABI from '../../shared/abi/grinder.json'
+import erc721ABI from '../../shared/abi/erc721.json'
+import {
+  useAccount,
+  useContract,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useProvider,
+} from 'wagmi'
+import { nftAddress } from '@components/exchange/Exchange'
+
+export const grinderAddress = '0xE3641277B8450e174a2Dea656649a3A1EBcEb2BE'
 
 export const SwapBox: FC = () => {
   // TODO: connect with the backend
   const [nftName, setNftName] = useState('#')
+  const { address } = useAccount()
+  const { data, isError, isLoading } = useContractRead({
+    address: nftName,
+    abi: erc721ABI,
+    functionName: 'isApprovedForAll',
+    args: [address, grinderAddress],
+  })
+
+  const { config } = usePrepareContractWrite({
+    abi: grinderABI,
+    address: grinderAddress,
+    functionName: 'fractionalizeNFT',
+    args: [nftName, 2],
+  })
+  const { write, isLoading: grindLoading } = useContractWrite(config)
+
+  const { config: nftConfig } = usePrepareContractWrite({
+    abi: erc721ABI,
+    address: nftName,
+    functionName: 'setApprovalForAll',
+    args: [grinderAddress, true],
+  })
+
+  const { write: approveNft, isLoading: approveLoading } = useContractWrite(nftConfig)
 
   const nftList = [
     {
-      name: 'BAYC #123',
+      name: 'BBYC',
+      address: '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79',
       id: 1,
-    },
-    {
-      name: 'BAYC #133',
-      id: 2,
     },
   ]
   const handleSelectNFT = (e: any) => {
     const nft = e.target.value
     setNftName(nft)
   }
+
+  const fractionalise = () => {
+    write?.()
+  }
+
+  const approve = () => {
+    approveNft?.()
+  }
+
+  console.log(data)
   return (
     <>
       <VStack
@@ -52,7 +96,7 @@ export const SwapBox: FC = () => {
         >
           <Select placeholder="Select NFT" onChange={handleSelectNFT}>
             {nftList.map((nft) => (
-              <option value={nft.name} key={nft.id}>
+              <option value={nft.address} key={nft.id}>
                 {nft.name}
               </option>
             ))}
@@ -78,19 +122,46 @@ export const SwapBox: FC = () => {
           alignItems="center"
           justifyContent="start"
         >
-          <Text>1,000,000 bb{nftName}</Text>
+          <Text>
+            1,000,000{' '}
+            {nftList.find((nft) => nft.address === nftName)
+              ? nftList.find((nft) => nft.address === nftName)?.name
+              : ''}
+          </Text>
         </Flex>
-        <Button
-          background="#4A99E9"
-          width="100%"
-          borderRadius="16px"
-          padding="30px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text>Swap</Text>
-        </Button>
+        {data ? (
+          <Button
+            isLoading={grindLoading}
+            onClick={() => {
+              fractionalise()
+            }}
+            background="#4A99E9"
+            width="100%"
+            borderRadius="16px"
+            padding="30px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text>Swap</Text>
+          </Button>
+        ) : (
+          <Button
+            isLoading={approveLoading}
+            onClick={() => {
+              approve()
+            }}
+            background="#4A99E9"
+            width="100%"
+            borderRadius="16px"
+            padding="30px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Text>Approve</Text>
+          </Button>
+        )}
       </VStack>
     </>
   )

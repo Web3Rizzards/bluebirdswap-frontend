@@ -37,7 +37,7 @@ type PriceResponse = {
   timestamp: string
 }
 
-export const nftAddress = '0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844'
+export const nftAddress = '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79'
 
 export const Exchange: FC<ExchangeProps> = ({
   collectionName,
