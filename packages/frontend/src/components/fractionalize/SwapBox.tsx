@@ -1,10 +1,7 @@
 import { Box, Button, Flex, HStack, Select, Text, VStack } from '@chakra-ui/react'
 import { ChevronDownIcon } from '@chakra-ui/icons'
-import Image from 'next/image'
-import Link from 'next/link'
-import githubIcon from 'public/icons/github.svg'
-import vercelIcon from 'public/icons/vercel.svg'
-import { FC, useState } from 'react'
+import { request, gql } from 'graphql-request'
+import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
 import grinderABI from '../../shared/abi/grinder.json'
 import erc721ABI from '../../shared/abi/erc721.json'
@@ -16,7 +13,22 @@ import {
   usePrepareContractWrite,
   useProvider,
 } from 'wagmi'
-import { nftAddress } from '@components/exchange/Exchange'
+
+type CollectionResponse = {
+  id: string
+  name: string
+  tokens: TokenResponse[] | null
+}
+type TokenResponse = {
+  id: number
+}
+
+type Token = {
+  id: string
+  owner: string
+  tokenId: string
+  collection: TokenResponse[]
+}
 
 export const grinderAddress = '0xE3641277B8450e174a2Dea656649a3A1EBcEb2BE'
 export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
@@ -24,6 +36,9 @@ export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
 export const SwapBox: FC = () => {
   // TODO: connect with the backend
   const [nftName, setNftName] = useState('#')
+  const [nftList, setData] = useState<CollectionResponse[]>([])
+  const [tokenList, setTokenList] = useState<Token[]>([])
+  const [selectedToken, setSelectedToken] = useState<number>()
   const { address } = useAccount()
   const { data, isError, isLoading } = useContractRead({
     address: nftName,
@@ -36,7 +51,7 @@ export const SwapBox: FC = () => {
     abi: grinderABI,
     address: grinderAddress,
     functionName: 'fractionalizeNFT',
-    args: [nftName, 2],
+    args: [nftName, selectedToken],
   })
   const { write, isLoading: grindLoading } = useContractWrite(config)
 
@@ -49,26 +64,79 @@ export const SwapBox: FC = () => {
 
   const { write: approveNft, isLoading: approveLoading } = useContractWrite(nftConfig)
 
-  const nftList = [
-    {
-      name: 'BBYC',
-      address: '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79',
-      id: 1,
-    },
-  ]
-  const handleSelectNFT = (e: any) => {
+  const handleSelectNFT = async (e: any) => {
     const nft = e.target.value
     setNftName(nft)
+    const response: { tokens: Token[] } = await request(
+      'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.0',
+      gql`
+        query GetTokensByOwnerAndCollection($owner: Bytes!, $collection: Bytes) {
+          tokens(where: { owner: $owner, collection: $collection }) {
+            id
+            owner
+            tokenId
+            collection {
+              id
+            }
+          }
+        }
+      `,
+      { owner: address, collection: nft },
+    )
+    setTokenList(response.tokens)
+    setSelectedToken(0)
+    console.log(response)
+  }
+
+  const handleSelectId = async (e: any) => {
+    const tokenId = e.target.value
+    setSelectedToken(tokenId)
   }
 
   const fractionalise = () => {
+    console.log(config)
     write?.()
   }
 
   const approve = () => {
+    console.log('dd')
     approveNft?.()
   }
 
+  useEffect(() => {
+    const getCollectionList = async () => {
+      const response: {
+        collections: CollectionResponse[]
+      } = await request(
+        'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.0',
+        gql`
+          query getCollection {
+            collections {
+              id
+              name
+              tokens {
+                id
+              }
+            }
+          }
+        `,
+        {},
+      )
+      console.log(response)
+      setData(
+        response.collections.map((collection) => ({
+          id: collection.id,
+          name: collection.name,
+          tokens: [],
+        })),
+      )
+    }
+    try {
+      getCollectionList()
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
   console.log(data)
   return (
     <>
@@ -97,8 +165,15 @@ export const SwapBox: FC = () => {
         >
           <Select placeholder="Select NFT" onChange={handleSelectNFT}>
             {nftList.map((nft) => (
-              <option value={nft.address} key={nft.id}>
+              <option value={nft.id} key={nft.id}>
                 {nft.name}
+              </option>
+            ))}
+          </Select>
+          <Select placeholder="Select Token ID" onChange={handleSelectId}>
+            {tokenList.map((token) => (
+              <option value={token.tokenId} key={token.tokenId}>
+                {token.tokenId}
               </option>
             ))}
           </Select>
@@ -125,9 +200,10 @@ export const SwapBox: FC = () => {
         >
           <Text>
             1,000,000{' '}
-            {nftList.find((nft) => nft.address === nftName)
-              ? nftList.find((nft) => nft.address === nftName)?.name
+            {nftList.find((nft) => nft.id === nftName)
+              ? nftList.find((nft) => nft.id === nftName)?.name
               : ''}
+            #{selectedToken}
           </Text>
         </Flex>
         {data ? (
