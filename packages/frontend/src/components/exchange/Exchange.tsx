@@ -38,6 +38,7 @@ type PriceResponse = {
 }
 
 export const nftAddress = '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79'
+export const fractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
 
 export const Exchange: FC<ExchangeProps> = ({
   collectionName,
