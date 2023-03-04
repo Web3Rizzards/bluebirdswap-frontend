@@ -30,8 +30,7 @@ type Token = {
   collection: TokenResponse[]
 }
 
-export const grinderAddress = '0xE3641277B8450e174a2Dea656649a3A1EBcEb2BE'
-export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
+import { azukiAddress, grinderAddress, nftAddress } from '@components/exchange/Exchange'
 
 export const SwapBox: FC = () => {
   // TODO: connect with the backend
@@ -46,6 +45,8 @@ export const SwapBox: FC = () => {
     functionName: 'isApprovedForAll',
     args: [address, grinderAddress],
   })
+
+  console.log('isApprovedForAll', data)
 
   const { config } = usePrepareContractWrite({
     abi: grinderABI,
