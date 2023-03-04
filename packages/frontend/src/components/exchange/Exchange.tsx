@@ -19,7 +19,6 @@ import 'twin.macro'
 import { formatEther, id, parseEther } from 'ethers/lib/utils.js'
 import { BigNumber } from 'ethers'
 import { useAccount, useBalance, useContractRead } from 'wagmi'
-import { optionsAddress } from '@components/fractionalize/SwapBox'
 import optionABI from '../../shared/abi/options.json'
 
 type StrikePrice = {
@@ -41,6 +40,11 @@ type PriceResponse = {
 
 export const nftAddress = '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79'
 export const fractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
+export const grinderAddress = '0x6D6Fe31F932c547AC4ec7359a64C17a4f59D9397'
+export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
+export const azukiOptionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
+export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
+export const azukiFractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
 
 export const Exchange: FC<ExchangeProps> = ({
   collectionName,

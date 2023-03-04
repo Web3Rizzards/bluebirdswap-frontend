@@ -15,11 +15,16 @@ import { ChevronDownIcon } from '@chakra-ui/icons'
 import { FC, useState } from 'react'
 import 'twin.macro'
 import Image from 'next/image'
-import { optionsAddress } from '@components/fractionalize/SwapBox'
 import { useAccount, useBalance, useContractWrite, usePrepareContractWrite } from 'wagmi'
 import optionABI from '../../shared/abi/options.json'
 import { BigNumber, ethers } from 'ethers'
-import { fractionalizeAddress, nftAddress } from '@components/exchange/Exchange'
+import {
+  azukiFractionalizeAddress,
+  azukiOptionsAddress,
+  fractionalizeAddress,
+  nftAddress,
+  optionsAddress,
+} from '@components/exchange/Exchange'
 import { formatEther } from 'ethers/lib/utils.js'
 
 export const StakeBox: FC = () => {
@@ -37,44 +42,12 @@ export const StakeBox: FC = () => {
       id: 1,
     },
     {
-      name: 'Red Bird Yatch Club Pool',
-      token: 'RBYC',
+      name: 'Azuki',
+      token: 'AZUKI',
       image: 'https://picsum.photos/200/200',
-      address: optionsAddress,
-      tokenAddress: fractionalizeAddress,
+      address: azukiOptionsAddress,
+      tokenAddress: azukiFractionalizeAddress,
       id: 2,
-    },
-    {
-      name: 'Gray Bird Yatch Club Pool',
-      token: 'GBYC',
-      image: 'https://picsum.photos/200/200',
-      address: optionsAddress,
-      tokenAddress: fractionalizeAddress,
-      id: 3,
-    },
-    {
-      name: 'Gray2 Bird Yatch Club Pool',
-      token: 'G2BYC',
-      image: 'https://picsum.photos/200/200',
-      address: optionsAddress,
-      tokenAddress: fractionalizeAddress,
-      id: 4,
-    },
-    {
-      name: 'Gray3 Bird Yatch Club Pool',
-      token: 'G3BYC',
-      image: 'https://picsum.photos/200/200',
-      address: optionsAddress,
-      tokenAddress: fractionalizeAddress,
-      id: 5,
-    },
-    {
-      name: 'Gray4 Bird Yatch Club Pool',
-      token: 'G4BYC',
-      image: 'https://picsum.photos/200/200',
-      address: optionsAddress,
-      tokenAddress: fractionalizeAddress,
-      id: 6,
     },
   ]
   const [selectedPool, setPool] = useState(poolList[0])

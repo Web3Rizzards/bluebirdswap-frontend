@@ -16,10 +16,7 @@ import {
   usePrepareContractWrite,
   useProvider,
 } from 'wagmi'
-import { nftAddress } from '@components/exchange/Exchange'
-
-export const grinderAddress = '0xE3641277B8450e174a2Dea656649a3A1EBcEb2BE'
-export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
+import { azukiAddress, grinderAddress, nftAddress } from '@components/exchange/Exchange'
 
 export const SwapBox: FC = () => {
   // TODO: connect with the backend
@@ -32,11 +29,13 @@ export const SwapBox: FC = () => {
     args: [address, grinderAddress],
   })
 
+  console.log('isApprovedForAll', data)
+
   const { config } = usePrepareContractWrite({
     abi: grinderABI,
     address: grinderAddress,
     functionName: 'fractionalizeNFT',
-    args: [nftName, 2],
+    args: [nftName, 4],
   })
   const { write, isLoading: grindLoading } = useContractWrite(config)
 
@@ -52,8 +51,13 @@ export const SwapBox: FC = () => {
   const nftList = [
     {
       name: 'BBYC',
-      address: '0x8f41BbAC1E5102De5F6595083229f96B5fEc8a79',
+      address: nftAddress,
       id: 1,
+    },
+    {
+      name: 'AZUKI',
+      address: azukiAddress,
+      id: 2,
     },
   ]
   const handleSelectNFT = (e: any) => {
