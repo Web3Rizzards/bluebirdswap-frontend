@@ -16,21 +16,6 @@ const TradePage: NextPage = () => {
 
       <CenterBody tw="mt-20 mb-10 px-5">
         <TradeBox />
-        <Exchange
-          floorPrice={10}
-          strikePrices={[
-            { price: 9, isPut: true },
-            { price: 10, isPut: true },
-            { price: 11, isPut: true },
-            { price: 13, isPut: false },
-            { price: 14, isPut: false },
-            { price: 15, isPut: false },
-          ]}
-          collectionName="BAYC"
-          startDate={new Date()}
-          endDate={new Date()}
-        />
-        {/* Title */}
       </CenterBody>
     </>
   )

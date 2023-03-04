@@ -14,6 +14,7 @@ import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
 import Image from 'next/image'
 import { convertUnixToDatetime, getTimestampInSeconds } from '@shared/helpers'
+import Link from 'next/link'
 
 export const TradeBox: FC = () => {
   const [distances, setDistances] = useState(new Map())
@@ -100,17 +101,19 @@ export const TradeBox: FC = () => {
               borderRadius="13px"
               key={pool.id}
             >
-              <Text>Time left : {distances.get(pool.id)}</Text>
-              <VStack cursor="pointer" onClick={() => console.log('hh')}>
-                <Text fontWeight="700" fontSize="large">
-                  {pool.name}
-                </Text>
-                <Image src={pool.image} width={200} height={200} alt="pic" />
-              </VStack>
-              <HStack display="flex" width="100%">
-                <Box flex={pool.call} background="red" height={3} />
-                <Box flex={pool.put} background="green" height={3} />
-              </HStack>
+              <Link href="/buy">
+                <Text>Time left : {distances.get(pool.id)}</Text>
+                <VStack cursor="pointer" onClick={() => console.log('hh')}>
+                  <Text fontWeight="700" fontSize="large">
+                    {pool.name}
+                  </Text>
+                  <Image src={pool.image} width={200} height={200} alt="pic" />
+                </VStack>
+                <HStack display="flex" width="100%">
+                  <Box flex={pool.call} background="red" height={3} />
+                  <Box flex={pool.put} background="green" height={3} />
+                </HStack>
+              </Link>
             </VStack>
           )
         })}
