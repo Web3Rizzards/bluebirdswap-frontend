@@ -10,17 +10,13 @@ import {
   Button,
   Flex,
   HStack,
-  Select,
   Text,
   VStack,
   useDisclosure,
 } from '@chakra-ui/react'
-import { ChevronDownIcon } from '@chakra-ui/icons'
+import { request, gql } from 'graphql-request'
 import Image from 'next/image'
-import Link from 'next/link'
-import githubIcon from 'public/icons/github.svg'
-import vercelIcon from 'public/icons/vercel.svg'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
 
 export interface HistoryProps {
@@ -40,10 +36,28 @@ export interface HistoryProps {
   endDate: string
 }
 
+type TradeType = {
+  id: number
+  option: {
+    id: number
+    epoch: number
+    strikePrice: number
+    isPut: boolean
+    startTime: number
+    expiry: number
+  }
+  premium: number
+  size: number
+  exercised: number
+  isProfit: boolean
+  pl: number
+  timestamp: number
+}
+
 export const ClaimBox: FC = () => {
   const [selectHistory, setSelectHistory] = useState<HistoryProps>()
   const { isOpen, onOpen, onClose } = useDisclosure()
-
+  const [data, setData] = useState<TradeType[]>([])
   const historyList = [
     {
       name: 'Blue Bird Yatch Club Pool #1',
@@ -103,6 +117,78 @@ export const ClaimBox: FC = () => {
   const onhandleClaim = () => {
     console.log('claim')
   }
+
+  useEffect(() => {
+    const getHistory = async () => {
+      const response: {
+        ownerTrades: TradeType[]
+      } = await request(
+        'https://api.studio.thegraph.com/query/43349/chainlink-nft-floor-price/v0.0.2',
+        gql`
+          query OwnerTrades($owner: Bytes!) {
+            trades(filter: { owner: { eq: $owner } }) {
+              id
+              option {
+                id
+                epoch
+                strikePrice
+                isPut
+                startTime
+                expiry
+              }
+              premium
+              size
+              exercised
+              isProfit
+              pl
+              timestamp
+            }
+          }
+        `,
+        {},
+      )
+      setData(
+        response.ownerTrades.map((trade) => ({
+          id: trade.id,
+          option: {
+            id: trade.option.id,
+            epoch: trade.option.epoch,
+            strikePrice: trade.option.strikePrice,
+            isPut: trade.option.isPut,
+            startTime: trade.option.startTime,
+            expiry: trade.option.expiry,
+          },
+          premium: trade.premium,
+          size: trade.size,
+          exercised: trade.exercised,
+          isProfit: trade.isProfit,
+          pl: trade.pl,
+          timestamp: trade.timestamp,
+        })),
+      )
+    }
+    try {
+      getHistory()
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  const CardStyle = {
+    background: '#1e2c37',
+    margin: '18px',
+    padding: '16px 41px',
+    borderRadius: '15px',
+    width: '80%',
+    gap: 2,
+  }
+
+  const FlexStyle = {
+    justifyContent: 'space-between',
+    fontSize: 'large',
+  }
+
   return (
     <>
       <VStack width="-webkit-fill-available">
@@ -110,16 +196,7 @@ export const ClaimBox: FC = () => {
           History
         </Text>
         {historyList.map((history) => (
-          <VStack
-            key={history?.id}
-            gap={2}
-            background="#1e2c37"
-            margin="18px"
-            padding="16px 41px"
-            borderRadius="15px"
-            width="80%"
-            onClick={() => handleSelectHistory(history)}
-          >
+          <VStack key={history?.id} style={CardStyle} onClick={() => handleSelectHistory(history)}>
             <Text fontSize="large" fontWeight={400}>
               {history.name}
             </Text>
@@ -168,19 +245,19 @@ export const ClaimBox: FC = () => {
             <Text fontSize="large">
               {selectHistory?.startDate} to {selectHistory?.endDate}
             </Text>
-            <Flex justifyContent="space-between" fontSize="large">
+            <Flex style={FlexStyle}>
               <Text>Strategy</Text>
               <Text>{selectHistory?.stretegy}</Text>
             </Flex>
-            <Flex justifyContent="space-between" fontSize="large">
+            <Flex style={FlexStyle}>
               <Text>Amount</Text>
               <Text>{selectHistory?.amount}</Text>
             </Flex>
-            <Flex justifyContent="space-between" fontSize="large">
+            <Flex style={FlexStyle}>
               <Text>Premium Paid</Text>
               <Text>{selectHistory?.premium}</Text>
             </Flex>
-            <Flex justifyContent="space-between" fontSize="large">
+            <Flex style={FlexStyle}>
               <Text>P&L</Text>
 
               {selectHistory?.pnlPositive ? (
