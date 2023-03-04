@@ -16,9 +16,11 @@ import {
   ReferenceLine,
 } from 'recharts'
 import 'twin.macro'
-import { formatEther, parseEther } from 'ethers/lib/utils.js'
+import { formatEther, id, parseEther } from 'ethers/lib/utils.js'
 import { BigNumber } from 'ethers'
-import { useAccount, useBalance } from 'wagmi'
+import { useAccount, useBalance, useContractRead } from 'wagmi'
+import { optionsAddress } from '@components/fractionalize/SwapBox'
+import optionABI from '../../shared/abi/options.json'
 
 type StrikePrice = {
   isPut: boolean
@@ -47,13 +49,14 @@ export const Exchange: FC<ExchangeProps> = ({
   strikePrices,
 }) => {
   const { address } = useAccount()
+  const [id, setID] = useState(0)
   const {
     data: nftBalance,
     isError,
     isLoading,
   } = useBalance({
     address: address ?? '0x',
-    token: nftAddress,
+    token: fractionalizeAddress,
   })
   const {
     data: ethBalance,
@@ -61,6 +64,13 @@ export const Exchange: FC<ExchangeProps> = ({
     isLoading: ethIsLoading,
   } = useBalance({
     address: address ?? '0x',
+  })
+  // getPremium
+  const { data: price } = useContractRead({
+    address: optionsAddress,
+    abi: optionABI,
+    functionName: 'getPremium',
+    args: [id],
   })
   const [data2, setData] = useState<PriceResponse[]>([])
   const [type, setType] = useState('Call')
@@ -126,10 +136,10 @@ export const Exchange: FC<ExchangeProps> = ({
     <Flex>
       <Box margin={'10px'}>
         <Text fontWeight={'700'} fontSize={'42px'}>
-          {collectionName + ' ' + startDate.toLocaleDateString()}
+          {collectionName + ' ' + startDate.toLocaleString()}
         </Text>
         <Text fontWeight={'700'} fontSize={'24px'}>
-          Expires {endDate.toLocaleDateString()}
+          Expires {endDate.toLocaleString()}
         </Text>
 
         <LineChart
@@ -153,7 +163,7 @@ export const Exchange: FC<ExchangeProps> = ({
           <YAxis
             // domain={['dataMin, dataMax']}
             domain={([dataMin, dataMax]) => {
-              return [dataMin * 0.95, dataMin * 1.05]
+              return [dataMin * 0.97, dataMin * 1.03]
             }}
           />
           {/* /> */}
@@ -234,8 +244,9 @@ export const Exchange: FC<ExchangeProps> = ({
           {renderOptions(strikePrices[5])}
         </Flex>
         <Flex justifyContent={'space-between'}>
-          <Text>Options</Text>
-          <Text>Balance</Text>
+          <Text fontWeight={'700'} fontSize={'30px'}>
+            buying {type.toLowerCase()}
+          </Text>
         </Flex>
         <Input
           onChange={onChange}
@@ -269,7 +280,9 @@ export const Exchange: FC<ExchangeProps> = ({
 
         <Flex justifyContent={'space-between'}>
           <Text fontWeight={'700'}>Total Cost</Text>
-          <Text fontWeight={'700'}>{cost}</Text>
+          <Text fontWeight={'700'}>
+            {cost} {type === 'Call' ? ' fBBYC' : ' ETH'}
+          </Text>
         </Flex>
 
         <Flex justifyContent={'space-between'}>

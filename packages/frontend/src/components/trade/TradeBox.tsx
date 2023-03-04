@@ -74,7 +74,7 @@ export const TradeBox: FC = () => {
     border: '4px solid white',
   }
   useEffect(() => {
-    console.log(distances, 'hihihihi')
+    // console.log(distances, 'hihihihi')
   }, [distances])
 
   return (
@@ -83,15 +83,15 @@ export const TradeBox: FC = () => {
         {/* TODO:TIMER Not yet don*/}
         {poolList.map((pool) => {
           // Update the count down every 1 second
-          const rn = getTimestampInSeconds()
-          setInterval(function () {
-            const res = convertUnixToDatetime(pool.expired - rn)
-            console.log(res)
-            const oneDistance = distances.set(pool.id, res)
-            setDistances(oneDistance)
-            console.log(distances, distances.get(pool.id))
-            // If the count down is finished, write some text
-          }, 1000)
+          // const rn = getTimestampInSeconds()
+          // setInterval(function () {
+          //   const res = convertUnixToDatetime(pool.expired - rn)
+          //   console.log(res)
+          //   const oneDistance = distances.set(pool.id, res)
+          //   setDistances(oneDistance)
+          //   console.log(distances, distances.get(pool.id))
+          //   // If the count down is finished, write some text
+          // }, 1000)
           return (
             <VStack
               background="#1e2c37"
