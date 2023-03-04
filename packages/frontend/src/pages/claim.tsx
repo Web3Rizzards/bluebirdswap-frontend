@@ -1,12 +1,8 @@
 import { HomePageTitle } from '@components/home/HomePageTitle'
 import { HomeTopBar } from '@components/home/HomeTopBar'
 import { CenterBody } from '@components/layout/CenterBody'
-import { GreeterContractInteractions } from '@components/web3/GreeterContractInteractions'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
 import type { NextPage } from 'next'
-import { Web3Button } from '@web3modal/react'
 import 'twin.macro'
-import Image from 'next/image'
 import { ClaimBox } from '@components/claim/ClaimBox'
 
 const ClaimPage: NextPage = () => {
