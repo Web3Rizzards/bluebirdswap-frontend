@@ -11,17 +11,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { Flex } from '@chakra-ui/react'
 
 const HomePage: NextPage = () => {
-  const buttonStyle = {
-    position: 'absolute',
-    top: '45%',
-    left: '42%',
-    width: '17em',
-    height: '4em',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-
   const { isConnected } = useAccount()
   return (
     <>
@@ -36,7 +25,7 @@ const HomePage: NextPage = () => {
       ) : (
         <CenterBody tw="px-5">
           <Image src={landing} alt="pic" />
-          <Flex style={buttonStyle}>
+          <Flex position="absolute" top="45%" left="42%">
             <ConnectButton />
           </Flex>
         </CenterBody>
