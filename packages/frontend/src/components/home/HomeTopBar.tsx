@@ -36,6 +36,9 @@ export const HomeTopBar: FC<Props> = ({ url }) => {
               Fractionlize
             </Text>
           </Link>
+          <Link href="/reconstruct">
+            <Text sx={url == 'reconstruct' ? SelectedStyles : nonSelectedStyles}>Reconstruct</Text>
+          </Link>
           <Link href="/stake">
             <Text sx={url == 'stake' ? SelectedStyles : nonSelectedStyles}>Stake</Text>
           </Link>
