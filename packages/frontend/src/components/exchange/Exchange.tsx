@@ -18,14 +18,21 @@ import {
 import 'twin.macro'
 import { formatEther, id, parseEther } from 'ethers/lib/utils.js'
 import { BigNumber } from 'ethers'
-import { useAccount, useBalance, useContractRead } from 'wagmi'
+import {
+  useAccount,
+  useBalance,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from 'wagmi'
 import optionABI from '../../shared/abi/options.json'
 
-type StrikePrice = {
+export type StrikePrice = {
+  id: string
   isPut: boolean
-  price: number
+  strikePrice: number
 }
-type ExchangeProps = {
+export type ExchangeProps = {
   collectionName: string
   startDate: Date
   endDate: Date
@@ -42,7 +49,7 @@ export const nftAddress = '0xd12C158F9CFf1a252B463F2c419Dca1f92872356'
 export const fractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
 export const grinderAddress = '0x6b3e522eD05AD29d8C52f091dBC5A7f9Eec97D4e'
 export const optionsAddress = '0x71231BBda865651A86699D53FEF1A39B60bF0bf8'
-export const azukiOptionsAddress = '0x548b1d4a67559bF801f35B57a8c0592826a4F56A'
+export const azukiOptionsAddress = '0x18321C660baaF61363cE92FCe79bFc2dF9AE7Aa1'
 export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
 export const azukiFractionalizeAddress = '0x39adf5f19c2da8e4554c6fd55f5d89d7273c6d4e'
 
@@ -52,8 +59,8 @@ export const Exchange: FC<ExchangeProps> = ({
   endDate,
   strikePrices,
 }) => {
+  const [type, setType] = useState<StrikePrice>()
   const { address } = useAccount()
-  const [id, setID] = useState(0)
   const {
     data: nftBalance,
     isError,
@@ -74,13 +81,12 @@ export const Exchange: FC<ExchangeProps> = ({
     address: optionsAddress,
     abi: optionABI,
     functionName: 'getPremium',
-    args: [id],
+    args: [type?.id],
   })
   const [data2, setData] = useState<PriceResponse[]>([])
-  const [type, setType] = useState('Call')
   const [profit, setProfit] = useState(7.3)
   const [loss, setLoss] = useState(7)
-  const [cost, setCost] = useState(0)
+
   const renderOptions = (strike: StrikePrice) => {
     return (
       <Box
@@ -90,15 +96,17 @@ export const Exchange: FC<ExchangeProps> = ({
         background={strike.isPut ? '#E93E4E' : '#5B9C4B'}
         margin={'3px'}
         borderRadius={'10px'}
-        onClick={() => setType(strike.isPut ? 'Put' : 'Call')}
+        onClick={() => setType(strike)}
       >
         {' '}
         <Text fontWeight={'700'} margin={'inherit'} textAlign={'center'}>
-          {strike.price + ' ETH'}
+          {strike.strikePrice + ' ETH'}
         </Text>{' '}
       </Box>
     )
   }
+
+  const [value, setValue] = useState<number>(0)
 
   useEffect(() => {
     const getPriceHistory = async () => {
@@ -133,9 +141,17 @@ export const Exchange: FC<ExchangeProps> = ({
   }, [])
 
   const onChange = (event: any) => {
-    console.log(event.target.value)
+    setValue(event.target.value)
   }
 
+  const { config } = usePrepareContractWrite({
+    abi: optionABI,
+    address: optionsAddress,
+    functionName: 'buy',
+    args: [type?.id.slice('0x18321c660baaf61363ce92fce79bfc2df9ae7aa1-'.length), value],
+  })
+  const { write, isLoading: writeLoad } = useContractWrite(config)
+  console.log([type?.id, value])
   return (
     <Flex>
       <Box margin={'10px'}>
@@ -183,9 +199,9 @@ export const Exchange: FC<ExchangeProps> = ({
           {strikePrices.map((price, i) => {
             return (
               <ReferenceLine
-                label={{ position: 'right', value: price.price + ' ETH', fontSize: 14 }}
+                label={{ position: 'right', value: price.strikePrice + ' ETH', fontSize: 14 }}
                 key={i}
-                y={price.price}
+                y={price.strikePrice}
                 stroke={price.isPut ? '#FF0000' : '#00FF00'}
                 strokeDasharray="3 3"
               />
@@ -249,11 +265,12 @@ export const Exchange: FC<ExchangeProps> = ({
         </Flex>
         <Flex justifyContent={'space-between'}>
           <Text fontWeight={'700'} fontSize={'30px'}>
-            buying {type.toLowerCase()}
+            buying {type?.isPut ? 'puts' : 'calls'}
           </Text>
         </Flex>
         <Input
           onChange={onChange}
+          value={value}
           height={'56px'}
           background={'#FFFFFF'}
           color={'black'}
@@ -270,35 +287,36 @@ export const Exchange: FC<ExchangeProps> = ({
         >
           <Flex justifyContent={'space-between'}>
             <Text fontWeight={'700'}>Strategy</Text>
-            <Text fontWeight={'700'}>{type}</Text>
+            <Text fontWeight={'700'}>{type?.isPut ? 'puts' : 'calls'}</Text>
           </Flex>
           <Flex justifyContent={'space-between'}>
             <Text fontWeight={'700'}>Profit Zone</Text>
-            <Text fontWeight={'700'}>{(type === 'Call' ? '> ' : '< ') + profit.toString()}</Text>
+            <Text fontWeight={'700'}>{(!type?.isPut ? '> ' : '< ') + profit.toString()}</Text>
           </Flex>
           <Flex justifyContent={'space-between'}>
             <Text fontWeight={'700'}>Max Loss Zone</Text>
-            <Text fontWeight={'700'}>{(type === 'Call' ? '< ' : '> ') + loss.toString()}</Text>
+            <Text fontWeight={'700'}>{(!type?.isPut ? '< ' : '> ') + loss.toString()}</Text>
           </Flex>
         </Box>
 
         <Flex justifyContent={'space-between'}>
           <Text fontWeight={'700'}>Total Cost</Text>
           <Text fontWeight={'700'}>
-            {cost} {type === 'Call' ? ' fBBYC' : ' ETH'}
+            {((type?.strikePrice || 1) * value) / 1000000} {!type?.isPut ? ' fBBYC' : ' ETH'}
           </Text>
         </Flex>
 
         <Flex justifyContent={'space-between'}>
           <Text fontWeight={'700'}>Your Balance</Text>
           <Text fontWeight={'700'}>
-            {type === 'Call'
+            {!type?.isPut
               ? formatEther(nftBalance?.value ? nftBalance?.value : BigNumber.from(0)) + ' fBBYC'
               : formatEther(ethBalance?.value ? ethBalance?.value : BigNumber.from(0)) + ' ETH'}
           </Text>
         </Flex>
 
         <Button
+          onClick={() => write?.()}
           width={'100%'}
           height={'56px'}
           background={'#4A99E9'}

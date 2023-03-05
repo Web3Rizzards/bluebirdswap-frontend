@@ -15,7 +15,14 @@ import { ChevronDownIcon } from '@chakra-ui/icons'
 import { FC, useState } from 'react'
 import 'twin.macro'
 import Image from 'next/image'
-import { useAccount, useBalance, useContractWrite, usePrepareContractWrite } from 'wagmi'
+import {
+  erc20ABI,
+  useAccount,
+  useBalance,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from 'wagmi'
 import optionABI from '../../shared/abi/options.json'
 import { BigNumber, ethers } from 'ethers'
 import {
@@ -25,7 +32,7 @@ import {
   nftAddress,
   optionsAddress,
 } from '@components/exchange/Exchange'
-import { formatEther } from 'ethers/lib/utils.js'
+import { formatEther, parseEther } from 'ethers/lib/utils.js'
 
 export const StakeBox: FC = () => {
   const [clickedId, setClickedId] = useState(0)
@@ -67,6 +74,21 @@ export const StakeBox: FC = () => {
   } = useBalance({
     address: address ?? '0x',
   })
+
+  const { data: allowance } = useContractRead({
+    address: selectedPool.tokenAddress,
+    abi: erc20ABI,
+    functionName: 'allowance',
+    args: [address ?? '0x', (selectedPool.address as any) ?? '0x'],
+  })
+
+  const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
+    abi: erc20ABI,
+    address: selectedPool.tokenAddress,
+    functionName: 'approve',
+    args: [(selectedPool.address as any) ?? '0x', parseEther('1000000000000000')],
+  })
+  const { write: approve, isLoading: approveLoading } = useContractWrite(allowanceConfig)
 
   const { config: nftConfig, error: depositNFTError } = usePrepareContractWrite({
     abi: optionABI,
@@ -116,6 +138,10 @@ export const StakeBox: FC = () => {
     }
   }
 
+  const handleApprove = () => {
+    approve?.()
+  }
+
   const setType = (e: any) => {
     setCoin(e.target.value)
   }
@@ -162,13 +188,23 @@ export const StakeBox: FC = () => {
                   <option>ETH</option>
                   <option>{pool.token}</option>
                 </Select>
-                <Button
-                  isLoading={depositNFTLoading || depositETHLoading}
-                  onClick={() => handleStake()}
-                  width="inherit"
-                >
-                  Stake
-                </Button>
+                {allowance?.eq(BigNumber.from('0')) ? (
+                  <Button
+                    isLoading={approveLoading}
+                    onClick={() => handleApprove()}
+                    width="inherit"
+                  >
+                    Approve
+                  </Button>
+                ) : (
+                  <Button
+                    isLoading={depositNFTLoading || depositETHLoading}
+                    onClick={() => handleStake()}
+                    width="inherit"
+                  >
+                    Stake
+                  </Button>
+                )}
               </FormControl>
             ) : (
               <></>
