@@ -114,7 +114,9 @@ export const ClaimBox: FC = () => {
           name:
             (trade.option.id.toLowerCase().includes(azukiFractionalizeAddress) ? 'Azuki' : 'BBYC') +
             'Option',
-          image: 'https://picsum.photos/200/200',
+          image: trade.option.id.toLowerCase().includes(azukiFractionalizeAddress)
+            ? 'https://i.ibb.co/GnRJ3X4/AZUKI-ICON.png'
+            : 'https://i.ibb.co/tby478L/BAYC-ICON.png',
           option: {
             id: trade.option.id,
             epoch: trade.option.epoch,
