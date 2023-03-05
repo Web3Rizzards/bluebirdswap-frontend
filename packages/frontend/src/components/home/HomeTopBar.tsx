@@ -38,7 +38,7 @@ export const HomeTopBar: FC<Props> = ({ url }) => {
 
         <HStack width="40%" justifyContent="space-between">
           <Link href="/fractionlize">
-            <Text sx={url == 'fractionlize' ? SelectedStyles : nonSelectedStyles}>
+            <Text sx={url == 'fractionalize' ? SelectedStyles : nonSelectedStyles}>
               Fractionlize
             </Text>
           </Link>
