@@ -69,7 +69,7 @@ const Buy: NextPage = () => {
         const response: {
           options: { epoch: string; id: string; isPut: boolean; strikePrice: string }[]
         } = await request(
-          'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.0',
+          'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.1',
           gql`
             query AllOptions {
               options {
