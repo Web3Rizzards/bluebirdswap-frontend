@@ -1,13 +1,15 @@
-import { Global } from '@emotion/react'
 import 'nprogress/nprogress.css'
-import tw, { css, GlobalStyles as BaseStyles } from 'twin.macro'
+
+import tw, { GlobalStyles as BaseStyles, css } from 'twin.macro'
+
+import { Global } from '@emotion/react'
 
 const customStyles = css`
   html {
     ${tw`scroll-smooth antialiased`}
   }
   body {
-    ${tw`bg-black text-white`}
+    ${tw`bg-slate-800 text-white`}
     ${tw`relative h-screen min-h-screen`}
   }
 
