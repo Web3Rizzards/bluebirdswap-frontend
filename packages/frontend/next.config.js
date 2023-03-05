@@ -17,6 +17,7 @@ const nextConfig = {
       'droppinprotocol.com',
       'stingray-app-elafw.ondigitalocean.app',
       'api-staging.polygonid.com',
+      'i.ibb.co',
     ],
   },
 }

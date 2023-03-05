@@ -47,9 +47,9 @@ type PriceResponse = {
 }
 
 export const nftAddress = '0xd12C158F9CFf1a252B463F2c419Dca1f92872356'
-export const fractionalizeAddress = '0xf12b904c594f5abebb9aed7a8b70b3a00d4f17cb'
+export const fractionalizeAddress = '0x2321fd96133fD8eC7126F41fb71b8efB6A52489F'
 export const grinderAddress = '0x6b3e522eD05AD29d8C52f091dBC5A7f9Eec97D4e'
-export const optionsAddress = '0x968Ba2dB7b83C9Bc5557708337D5c012aEE57071'
+export const optionsAddress = '0x2321fd96133fD8eC7126F41fb71b8efB6A52489F'
 export const azukiOptionsAddress = '0xEDA59d2d39f868f8e1F0C135AAa2F4A7EADB9bF1'
 export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
 export const azukiFractionalizeAddress = '0x2e02e42872550329ec835c99a00ad9903d72a1dc'

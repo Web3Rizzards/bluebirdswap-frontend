@@ -27,6 +27,7 @@ import {
 import optionABI from '../../shared/abi/options.json'
 import { BigNumber, ethers } from 'ethers'
 import {
+  azukiAddress,
   azukiFractionalizeAddress,
   azukiOptionsAddress,
   fractionalizeAddress,
@@ -39,7 +40,8 @@ import { env } from '@shared/environment'
 type CollectionResponse = {
   id: string
   name: string
-  tokens: TokenResponse[] | null
+  symbol: string
+  tokens: TokenResponse[] | []
 }
 type TokenResponse = {
   id: number
@@ -49,27 +51,9 @@ export const StakeBox: FC = () => {
   const [clickedId, setClickedId] = useState(0)
   const [swapAmount, setSwapAmount] = useState(0)
   const [coin, setCoin] = useState('ETH')
-  const [data, setPoolList] = useState<CollectionResponse[]>([])
+  const [poolList, setPoolList] = useState<CollectionResponse[]>([])
 
-  const poolList = [
-    {
-      name: 'Blue Bird Yatch Club Pool',
-      token: 'BBYC',
-      image: 'https://picsum.photos/200/200',
-      tokenAddress: fractionalizeAddress,
-      address: optionsAddress,
-      id: 1,
-    },
-    {
-      name: 'Azuki',
-      token: 'AZUKI',
-      image: 'https://picsum.photos/200/200',
-      address: azukiOptionsAddress,
-      tokenAddress: azukiFractionalizeAddress,
-      id: 2,
-    },
-  ]
-  const [selectedPool, setPool] = useState(poolList[0])
+  const [selectedPool, setPool] = useState<CollectionResponse>()
   const { address } = useAccount()
   const {
     data: nftBalance,
@@ -77,7 +61,7 @@ export const StakeBox: FC = () => {
     isLoading,
   } = useBalance({
     address: address ?? '0x',
-    token: selectedPool.tokenAddress as any,
+    token: selectedPool?.tokenAddress as any,
   })
   const {
     data: ethBalance,
@@ -88,23 +72,23 @@ export const StakeBox: FC = () => {
   })
 
   const { data: allowance } = useContractRead({
-    address: selectedPool.tokenAddress,
+    address: selectedPool?.tokenAddress,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [address ?? '0x', (selectedPool.address as any) ?? '0x'],
+    args: [address ?? '0x', (selectedPool?.address as any) ?? '0x'],
   })
 
   const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
     abi: erc20ABI,
-    address: selectedPool.tokenAddress,
+    address: selectedPool?.tokenAddress,
     functionName: 'approve',
-    args: [(selectedPool.address as any) ?? '0x', parseEther('1000000000000000')],
+    args: [(selectedPool?.address as any) ?? '0x', parseEther('1000000000000000')],
   })
   const { write: approve, isLoading: approveLoading } = useContractWrite(allowanceConfig)
 
   const { config: nftConfig, error: depositNFTError } = usePrepareContractWrite({
     abi: optionABI,
-    address: selectedPool.address,
+    address: selectedPool?.address,
     functionName: 'depositNftToken',
     args: [ethers.utils.parseEther(+swapAmount ? swapAmount + '' : '0')],
   })
@@ -112,7 +96,7 @@ export const StakeBox: FC = () => {
 
   const { config, error: depositETHError } = usePrepareContractWrite({
     abi: optionABI,
-    address: selectedPool.address,
+    address: selectedPool?.address,
     functionName: 'depositETH',
     args: [],
     overrides: {
@@ -178,13 +162,18 @@ export const StakeBox: FC = () => {
         {},
       )
       console.log(response)
-      // setData(
-      //   response.collections.map((collection) => ({
-      //     id: collection.id,
-      //     name: collection.name,
-      //     tokens: [],
-      //   })),
-      // )
+      setPoolList(
+        response.collections.map((collection) => ({
+          id: collection.id,
+          name: collection.name,
+          symbol: collection.symbol,
+          address: collection.symbol === 'BBYC' ? optionsAddress : azukiAddress,
+          tokenAddress:
+            collection.symbol === 'BBYC' ? fractionalizeAddress : azukiFractionalizeAddress,
+          tokens: [],
+        })),
+      )
+      console.log(poolList)
     }
     try {
       getCollectionList()
@@ -211,8 +200,23 @@ export const StakeBox: FC = () => {
               <Text fontWeight="700" fontSize="large">
                 {pool.name}
               </Text>
-              <Image src={pool.image} width={200} height={200} alt="pic" />
+              {pool.symbol == 'BBYC' ? (
+                <Image
+                  src="https://i.ibb.co/tby478L/BAYC-ICON.png"
+                  alt="BAYC-ICON"
+                  width={100}
+                  height={100}
+                ></Image>
+              ) : (
+                <Image
+                  src="https://i.ibb.co/GnRJ3X4/AZUKI-ICON.png"
+                  alt="AZUKI-ICON"
+                  width={100}
+                  height={100}
+                ></Image>
+              )}
             </VStack>
+
             {clickedId === pool.id ? (
               <FormControl gap={2}>
                 <FormLabel>Swap Amount</FormLabel>
@@ -221,7 +225,7 @@ export const StakeBox: FC = () => {
                   {coin !== 'ETH'
                     ? formatEther(nftBalance?.value ? nftBalance?.value : BigNumber.from(0)) +
                       ' ' +
-                      pool.token
+                      pool.symbol
                     : formatEther(ethBalance?.value ? ethBalance?.value : BigNumber.from(0)) +
                       ' ETH'}
                 </Text>
@@ -233,7 +237,7 @@ export const StakeBox: FC = () => {
                 />
                 <Select value={coin} onChange={(e) => setType(e)}>
                   <option>ETH</option>
-                  <option>{pool.token}</option>
+                  <option>{pool.symbol}</option>
                 </Select>
                 {allowance?.eq(BigNumber.from('0')) ? (
                   <Button
