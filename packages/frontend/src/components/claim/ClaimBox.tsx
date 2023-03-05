@@ -39,21 +39,21 @@ export interface HistoryProps {
 }
 
 type TradeType = {
-  id: number
+  id: string
   option: {
-    id: number
-    epoch: number
+    id: string
+    epoch: string
     strikePrice: number
     isPut: boolean
-    startTime: number
-    expiry: number
+    startTime: string
+    expiry: string
   }
-  premium: number
-  size: number
-  exercised: number
+  premium: string
+  size: string
+  exercised: boolean
   isProfit: boolean
-  pl: number
-  timestamp: number
+  pl: string
+  timestamp: string
 }
 
 export const ClaimBox: FC = () => {

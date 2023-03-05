@@ -11,8 +11,9 @@ import {
   Toast,
   VStack,
 } from '@chakra-ui/react'
+import { request, gql } from 'graphql-request'
 import { ChevronDownIcon } from '@chakra-ui/icons'
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
 import Image from 'next/image'
 import {
@@ -33,11 +34,22 @@ import {
   optionsAddress,
 } from '@components/exchange/Exchange'
 import { formatEther, parseEther } from 'ethers/lib/utils.js'
+import { env } from '@shared/environment'
+
+type CollectionResponse = {
+  id: string
+  name: string
+  tokens: TokenResponse[] | null
+}
+type TokenResponse = {
+  id: number
+}
 
 export const StakeBox: FC = () => {
   const [clickedId, setClickedId] = useState(0)
   const [swapAmount, setSwapAmount] = useState(0)
   const [coin, setCoin] = useState('ETH')
+  const [data, setPoolList] = useState<CollectionResponse[]>([])
 
   const poolList = [
     {
@@ -145,6 +157,41 @@ export const StakeBox: FC = () => {
   const setType = (e: any) => {
     setCoin(e.target.value)
   }
+  useEffect(() => {
+    const getCollectionList = async () => {
+      const response: {
+        collections: CollectionResponse[]
+      } = await request(
+        env.graphEndPoint,
+        gql`
+          query getCollection {
+            collections {
+              id
+              symbol
+              name
+              tokens {
+                id
+              }
+            }
+          }
+        `,
+        {},
+      )
+      console.log(response)
+      // setData(
+      //   response.collections.map((collection) => ({
+      //     id: collection.id,
+      //     name: collection.name,
+      //     tokens: [],
+      //   })),
+      // )
+    }
+    try {
+      getCollectionList()
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
   return (
     <>
       {(depositETHError || depositNFTError) && (
