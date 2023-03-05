@@ -42,13 +42,15 @@ type CollectionResponse = {
   name: string
   symbol: string
   tokens: TokenResponse[] | []
+  tokenAddress: string
+  address: string
 }
 type TokenResponse = {
   id: number
 }
 
 export const StakeBox: FC = () => {
-  const [clickedId, setClickedId] = useState(0)
+  const [clickedId, setClickedId] = useState('')
   const [swapAmount, setSwapAmount] = useState(0)
   const [coin, setCoin] = useState('ETH')
   const [poolList, setPoolList] = useState<CollectionResponse[]>([])
@@ -109,7 +111,7 @@ export const StakeBox: FC = () => {
     border: '4px solid white',
   }
 
-  const handleClick = (poolId: number) => {
+  const handleClick = (poolId: string) => {
     setClickedId(poolId)
     const p = poolList.find((pool) => poolId === pool.id)
     if (p) {
