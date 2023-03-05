@@ -270,16 +270,16 @@ export const Exchange: FC<ExchangeProps> = ({
           </Box>
         </Flex>
         <Flex justifyContent={'space-between'}>
-          {renderOptions(strikePrices[0])}
-          {renderOptions(strikePrices[3])}
+          {strikePrices[0] && renderOptions(strikePrices[0])}
+          {strikePrices[3] && renderOptions(strikePrices[3])}
         </Flex>
         <Flex justifyContent={'space-between'}>
-          {renderOptions(strikePrices[1])}
-          {renderOptions(strikePrices[4])}
+          {strikePrices[1] && renderOptions(strikePrices[1])}
+          {strikePrices[4] && renderOptions(strikePrices[4])}
         </Flex>
         <Flex justifyContent={'space-between'}>
-          {renderOptions(strikePrices[2])}
-          {renderOptions(strikePrices[5])}
+          {strikePrices[2] && renderOptions(strikePrices[2])}
+          {strikePrices[5] && renderOptions(strikePrices[5])}
         </Flex>
         <Flex justifyContent={'space-between'}>
           <Text fontWeight={'700'} fontSize={'30px'}>
