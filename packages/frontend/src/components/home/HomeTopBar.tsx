@@ -1,8 +1,12 @@
-import { Button, Flex, HStack, Text } from '@chakra-ui/react'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
-import Link from 'next/link'
-import { FC } from 'react'
 import 'twin.macro'
+
+import { Button, Flex, HStack, Text } from '@chakra-ui/react'
+
+import BluebirdLogo from 'public/images/bluebird-logo.png'
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { FC } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 type Props = {
   url: string
@@ -27,10 +31,12 @@ export const HomeTopBar: FC<Props> = ({ url }) => {
       <Flex alignItems="center" justifyContent="space-between" padding={6} background="#1E2C37">
         {/* TODO : LOGO */}
         <Link href="/">
-          <Text fontSize="x-large">BLUEBIRD SWAP</Text>
+          <Image src={BluebirdLogo} alt="bb-logo"></Image>
+
+          {/* <Text fontSize="x-large">BLUEBIRD SWAP</Text> */}
         </Link>
 
-        <HStack width="50%" justifyContent="space-between">
+        <HStack width="40%" justifyContent="space-between">
           <Link href="/fractionlize">
             <Text sx={url == 'fractionlize' ? SelectedStyles : nonSelectedStyles}>
               Fractionlize
