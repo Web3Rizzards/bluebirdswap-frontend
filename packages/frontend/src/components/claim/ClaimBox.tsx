@@ -189,7 +189,7 @@ export const ClaimBox: FC = () => {
 
                 {+history?.pnl < 0 ? (
                   <Text color="lightgreen">
-                    {(-1 * history.pnl) / 1000000000000000000}
+                    {(-1 * Number(history.pnl)) / 1000000000000000000}
                     {history?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ) : (
@@ -243,7 +243,7 @@ export const ClaimBox: FC = () => {
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Amount</Text>
-              <Text>{selectHistory?.size / 1000000000000000000}</Text>
+              <Text>{Number(selectHistory?.size) / 1000000000000000000}</Text>
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Premium Paid</Text>
@@ -268,7 +268,7 @@ export const ClaimBox: FC = () => {
               {selectHistory &&
                 (selectHistory?.pnl && +selectHistory?.pnl < 0 ? (
                   <Text color="lightgreen">
-                    {(-1 * selectHistory.pnl) / 1000000000000000000}
+                    {(-1 * Number(selectHistory.pnl)) / 1000000000000000000}
                     {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ) : (
