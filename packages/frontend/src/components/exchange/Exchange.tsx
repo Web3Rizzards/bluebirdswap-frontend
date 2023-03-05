@@ -48,8 +48,8 @@ type PriceResponse = {
 }
 
 export const nftAddress = '0xd12C158F9CFf1a252B463F2c419Dca1f92872356'
-export const fractionalizeAddress = '0x2321fd96133fD8eC7126F41fb71b8efB6A52489F'
-export const grinderAddress = '0x6b3e522eD05AD29d8C52f091dBC5A7f9Eec97D4e'
+export const fractionalizeAddress = '0x525bb6caFeD1b97A654b250bb0a962578A8d2cf6'
+export const grinderAddress = '0x503F5104361D4e0be9874D90d24Fdfd3c88e248F'
 export const optionsAddress = '0x98aa30Ce2f37B230A065B5b1E39cF447122F675c'
 export const azukiOptionsAddress = '0x6e42ed27C4470aD83250Fb6947F4AfBCd6bac98e'
 export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
@@ -69,7 +69,7 @@ export const Exchange: FC<ExchangeProps> = ({
     isLoading,
   } = useBalance({
     address: address ?? '0x',
-    token: azukiFractionalizeAddress,
+    token: fractionalizeAddress,
   })
   const {
     data: ethBalance,
@@ -80,7 +80,7 @@ export const Exchange: FC<ExchangeProps> = ({
   })
   // getPremium
   const { data: price } = useContractRead({
-    address: azukiOptionsAddress,
+    address: optionsAddress,
     abi: optionABI,
     functionName: 'getPremium',
     args: [type?.id],
@@ -109,19 +109,19 @@ export const Exchange: FC<ExchangeProps> = ({
   }
 
   const { data: allowance } = useContractRead({
-    address: azukiFractionalizeAddress,
+    address: fractionalizeAddress,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [address ?? '0x', azukiOptionsAddress],
+    args: [address ?? '0x', optionsAddress],
   })
 
   console.log(allowance?.toString())
 
   const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
     abi: erc20ABI,
-    address: azukiFractionalizeAddress,
+    address: fractionalizeAddress,
     functionName: 'approve',
-    args: [azukiOptionsAddress, parseEther('1000000000000000')],
+    args: [optionsAddress, parseEther('1000000000000000')],
   })
   const { write: approve, isLoading: approveLoading } = useContractWrite(allowanceConfig)
 
@@ -165,9 +165,12 @@ export const Exchange: FC<ExchangeProps> = ({
 
   const { config } = usePrepareContractWrite({
     abi: optionABI,
-    address: azukiOptionsAddress,
+    address: optionsAddress,
     functionName: 'buy',
-    args: [type?.id.slice('0x18321c660baaf61363ce92fce79bfc2df9ae7aa1-'.length), value],
+    args: [
+      type?.id.slice('0x18321c660baaf61363ce92fce79bfc2df9ae7aa1-'.length),
+      parseEther(value + ''),
+    ],
   })
   const { write, isLoading: writeLoad } = useContractWrite(config)
   return (

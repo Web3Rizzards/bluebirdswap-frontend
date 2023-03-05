@@ -14,7 +14,7 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react'
-import { azukiFractionalizeAddress } from '@components/exchange/Exchange'
+import { azukiFractionalizeAddress, optionsAddress } from '@components/exchange/Exchange'
 import { env } from '@shared/environment'
 import { BigNumber } from 'ethers'
 import { formatEther } from 'ethers/lib/utils.js'
@@ -22,7 +22,8 @@ import { request, gql } from 'graphql-request'
 import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
-import { useAccount } from 'wagmi'
+import optionABI from '../../shared/abi/options.json'
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi'
 
 export interface HistoryProps {
   name: string
@@ -74,8 +75,17 @@ export const ClaimBox: FC = () => {
     onOpen()
   }
 
+  const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
+    abi: optionABI,
+    address: optionsAddress,
+    functionName: 'exercise',
+    args: [selectHistory?.option.id.slice('0x18321c660baaf61363ce92fce79bfc2df9ae7aa1-'.length)],
+  })
+  const { write: claim, isLoading: approveLoading } = useContractWrite(allowanceConfig)
+
   const onhandleClaim = () => {
-    console.log('claim')
+    console.log(allowanceConfig)
+    claim?.()
   }
 
   useEffect(() => {
@@ -131,8 +141,8 @@ export const ClaimBox: FC = () => {
           isProfit: trade.isProfit,
           pl: trade.pl,
           pnl: (
-            (+'12289403943000' - +trade.premium) * +trade.size -
-            +trade.size * +trade.premium
+            (+'12289403943000' - +trade.premium) * (+trade.size / 1000000000000000000) -
+            (+trade.size / 1000000000000000000) * +trade.premium
           ).toString(),
           timestamp: trade.timestamp,
         })),
@@ -141,7 +151,6 @@ export const ClaimBox: FC = () => {
 
     try {
       getHistory()
-      console.log(data)
     } catch (error) {
       console.log(error)
     }
@@ -180,12 +189,12 @@ export const ClaimBox: FC = () => {
 
                 {+history?.pnl > 0 ? (
                   <Text color="lightgreen">
-                    +{+(+formatEther(BigNumber.from(history.pnl))).toFixed(5)}
+                    +{history.pnl}
                     {history.option.isPut ? 'ETH' : 'NFT'}
                   </Text>
                 ) : (
                   <Text color="lightpink">
-                    {+(+formatEther(BigNumber.from(history.pnl))).toFixed(5)}
+                    {0}
                     {history.option.isPut ? 'ETH' : 'NFT'}
                   </Text>
                 )}
@@ -234,7 +243,7 @@ export const ClaimBox: FC = () => {
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Amount</Text>
-              <Text>{selectHistory?.size}</Text>
+              <Text>{selectHistory?.size / 1000000000000000000}</Text>
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Premium Paid</Text>
@@ -242,7 +251,12 @@ export const ClaimBox: FC = () => {
               {selectHistory && (
                 <Text>
                   {formatEther(
-                    BigNumber.from((+selectHistory.premium * +selectHistory.size).toString()),
+                    BigNumber.from(
+                      (
+                        (+selectHistory.premium * +selectHistory.size) /
+                        1000000000000000000
+                      ).toString(),
+                    ),
                   )}{' '}
                   ETH
                 </Text>
@@ -254,12 +268,12 @@ export const ClaimBox: FC = () => {
               {selectHistory &&
                 (selectHistory?.pnl && +selectHistory?.pnl > 0 ? (
                   <Text color="lightgreen">
-                    +{selectHistory?.pnl}
+                    +{+(+formatEther(BigNumber.from(selectHistory.pnl))).toFixed(5)}
                     {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ) : (
                   <Text color="lightpink">
-                    {+(+formatEther(BigNumber.from(selectHistory?.pnl))).toFixed(2)}
+                    {0}
                     {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ))}

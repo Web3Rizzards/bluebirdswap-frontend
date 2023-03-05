@@ -65,6 +65,7 @@ export const StakeBox: FC = () => {
     address: address ?? '0x',
     token: selectedPool?.tokenAddress as any,
   })
+  console.log(selectedPool?.tokenAddress)
   const {
     data: ethBalance,
     isError: ethError,
@@ -105,6 +106,7 @@ export const StakeBox: FC = () => {
       value: ethers.utils.parseEther(+swapAmount ? swapAmount + '' : '0'),
     },
   })
+
   const { write, isLoading: depositETHLoading } = useContractWrite(config)
 
   const hoverStyle = {
@@ -123,7 +125,7 @@ export const StakeBox: FC = () => {
     const res = e.target.value
     setSwapAmount(res)
   }
-
+  console.log('coin', coin, 'poolList', poolList)
   const handleStake = () => {
     try {
       if (coin === 'ETH') {
@@ -169,7 +171,7 @@ export const StakeBox: FC = () => {
           id: collection.id,
           name: collection.name,
           symbol: collection.symbol,
-          address: collection.symbol === 'BBYC' ? optionsAddress : azukiAddress,
+          address: collection.symbol === 'BBYC' ? optionsAddress : azukiOptionsAddress,
           tokenAddress:
             collection.symbol === 'BBYC' ? fractionalizeAddress : azukiFractionalizeAddress,
           tokens: [],

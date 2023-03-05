@@ -94,6 +94,7 @@ const Buy: NextPage = () => {
               strikePrice: +(+formatEther(BigNumber.from(obj.strikePrice)) * 1000000).toFixed(2),
             })),
         )
+        console.log(strikes)
       } catch (error) {
         console.log(error)
       }
