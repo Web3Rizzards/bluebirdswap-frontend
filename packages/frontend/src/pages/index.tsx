@@ -18,8 +18,8 @@ const HomePage: NextPage = () => {
         <>
           {' '}
           <HomeTopBar url="home" />
-          <CenterBody tw="mt-20 mb-10 px-5">
-            <HomePageTitle />
+          <CenterBody tw="px-5">
+            <Image src={landing} alt="pic" />
           </CenterBody>{' '}
         </>
       ) : (
