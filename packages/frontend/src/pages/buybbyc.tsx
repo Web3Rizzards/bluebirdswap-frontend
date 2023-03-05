@@ -55,9 +55,10 @@ const Buy: NextPage = () => {
     functionName: 'EXPIRY',
     args: [],
   })
-  const endTime = startTimeEpoch
-    ? (startTimeEpoch as BigNumber).add(expiry as BigNumber)
-    : BigNumber.from('0')
+  const endTime =
+    startTimeEpoch && expiry
+      ? (startTimeEpoch as BigNumber).add(expiry as BigNumber)
+      : BigNumber.from('0')
 
   useEffect(() => {
     const getPriceHistory = async () => {
