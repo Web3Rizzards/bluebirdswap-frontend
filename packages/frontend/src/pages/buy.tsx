@@ -15,6 +15,7 @@ import { BigNumber } from 'ethers'
 import request, { gql } from 'graphql-request'
 import { useEffect, useState } from 'react'
 import { formatEther } from 'ethers/lib/utils.js'
+import { env } from '@shared/environment'
 
 const Buy: NextPage = () => {
   const [strikes, setStrikes] = useState<StrikePrice[]>([
@@ -69,7 +70,7 @@ const Buy: NextPage = () => {
         const response: {
           options: { epoch: string; id: string; isPut: boolean; strikePrice: string }[]
         } = await request(
-          'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.1',
+          env.graphEndPoint,
           gql`
             query AllOptions {
               options {

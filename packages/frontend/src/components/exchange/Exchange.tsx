@@ -19,6 +19,7 @@ import 'twin.macro'
 import { formatEther, id, parseEther } from 'ethers/lib/utils.js'
 import { BigNumber } from 'ethers'
 import {
+  erc20ABI,
   useAccount,
   useBalance,
   useContractRead,
@@ -51,7 +52,7 @@ export const grinderAddress = '0x6b3e522eD05AD29d8C52f091dBC5A7f9Eec97D4e'
 export const optionsAddress = '0x968Ba2dB7b83C9Bc5557708337D5c012aEE57071'
 export const azukiOptionsAddress = '0xEDA59d2d39f868f8e1F0C135AAa2F4A7EADB9bF1'
 export const azukiAddress = '0xe88fc6063b09d822b12fcab33f77e5ab6336e1c0'
-export const azukiFractionalizeAddress = '0x39adf5f19c2da8e4554c6fd55f5d89d7273c6d4e'
+export const azukiFractionalizeAddress = '0x2e02e42872550329ec835c99a00ad9903d72a1dc'
 
 export const Exchange: FC<ExchangeProps> = ({
   collectionName,
@@ -67,7 +68,7 @@ export const Exchange: FC<ExchangeProps> = ({
     isLoading,
   } = useBalance({
     address: address ?? '0x',
-    token: fractionalizeAddress,
+    token: azukiFractionalizeAddress,
   })
   const {
     data: ethBalance,
@@ -78,7 +79,7 @@ export const Exchange: FC<ExchangeProps> = ({
   })
   // getPremium
   const { data: price } = useContractRead({
-    address: optionsAddress,
+    address: azukiOptionsAddress,
     abi: optionABI,
     functionName: 'getPremium',
     args: [type?.id],
@@ -105,6 +106,23 @@ export const Exchange: FC<ExchangeProps> = ({
       </Box>
     )
   }
+
+  const { data: allowance } = useContractRead({
+    address: azukiFractionalizeAddress,
+    abi: erc20ABI,
+    functionName: 'allowance',
+    args: [address ?? '0x', azukiOptionsAddress],
+  })
+
+  console.log(allowance?.toString())
+
+  const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
+    abi: erc20ABI,
+    address: azukiFractionalizeAddress,
+    functionName: 'approve',
+    args: [azukiOptionsAddress, parseEther('1000000000000000')],
+  })
+  const { write: approve, isLoading: approveLoading } = useContractWrite(allowanceConfig)
 
   const [value, setValue] = useState<number>(0)
 
@@ -146,12 +164,11 @@ export const Exchange: FC<ExchangeProps> = ({
 
   const { config } = usePrepareContractWrite({
     abi: optionABI,
-    address: optionsAddress,
+    address: azukiOptionsAddress,
     functionName: 'buy',
     args: [type?.id.slice('0x18321c660baaf61363ce92fce79bfc2df9ae7aa1-'.length), value],
   })
   const { write, isLoading: writeLoad } = useContractWrite(config)
-  console.log([type?.id, value])
   return (
     <Flex>
       <Box margin={'10px'}>
