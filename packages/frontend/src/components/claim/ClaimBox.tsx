@@ -249,17 +249,18 @@ export const ClaimBox: FC = () => {
             <Flex style={FlexStyle}>
               <Text>P&L</Text>
 
-              {selectHistory?.pnl && +selectHistory?.pnl > 0 ? (
-                <Text color="lightgreen">
-                  +{selectHistory?.pnl}
-                  {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
-                </Text>
-              ) : (
-                <Text color="lightpink">
-                  {+(+formatEther(BigNumber.from(selectHistory?.pnl))).toFixed(2)}
-                  {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
-                </Text>
-              )}
+              {selectHistory &&
+                (selectHistory?.pnl && +selectHistory?.pnl > 0 ? (
+                  <Text color="lightgreen">
+                    +{selectHistory?.pnl}
+                    {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
+                  </Text>
+                ) : (
+                  <Text color="lightpink">
+                    {+(+formatEther(BigNumber.from(selectHistory?.pnl))).toFixed(2)}
+                    {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
+                  </Text>
+                ))}
             </Flex>
           </ModalBody>
 
