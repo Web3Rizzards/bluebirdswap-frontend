@@ -25,7 +25,7 @@ const HomePage: NextPage = () => {
       ) : (
         <CenterBody tw="px-5">
           <Image src={landing} alt="pic" />
-          <Flex position="absolute" top="45%" left="42%">
+          <Flex position="absolute" top="45%" left="45%">
             <ConnectButton />
           </Flex>
         </CenterBody>
