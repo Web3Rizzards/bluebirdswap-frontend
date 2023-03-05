@@ -27,6 +27,7 @@ import {
   usePrepareContractWrite,
 } from 'wagmi'
 import optionABI from '../../shared/abi/options.json'
+import { env } from '@shared/environment'
 
 export type StrikePrice = {
   id: string
@@ -131,7 +132,7 @@ export const Exchange: FC<ExchangeProps> = ({
       const response: {
         priceDatas: PriceResponse[]
       } = await request(
-        'https://api.studio.thegraph.com/query/43349/chainlink-nft-floor-price/v0.0.2',
+        env.graphEndPoint,
         gql`
           query LatestPriceData {
             priceDatas(orderBy: roundId, orderDirection: desc, first: 168) {
