@@ -42,6 +42,8 @@ type CollectionResponse = {
   name: string
   symbol: string
   tokens: TokenResponse[] | []
+  tokenAddress: string
+  address: string
 }
 type TokenResponse = {
   id: number
