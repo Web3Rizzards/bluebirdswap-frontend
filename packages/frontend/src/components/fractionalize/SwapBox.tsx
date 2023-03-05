@@ -86,7 +86,7 @@ export const SwapBox: FC = () => {
     const nft = e.target.value
     setNftName(nft)
     const response: { tokens: Token[] } = await request(
-      'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.0',
+      env.graphEndPoint,
       gql`
         query GetTokensByOwnerAndCollection($owner: Bytes!, $collection: Bytes) {
           tokens(where: { owner: $owner, collection: $collection }) {
@@ -111,13 +111,11 @@ export const SwapBox: FC = () => {
     setSelectedToken(tokenId)
   }
 
-  const fractionalise = () => {
-    console.log(config)
+  const fractionalise = async () => {
     write?.()
   }
 
   const approve = () => {
-    console.log('dd')
     approveNft?.()
   }
 
