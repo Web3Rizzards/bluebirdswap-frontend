@@ -14,7 +14,10 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react'
+import { azukiFractionalizeAddress } from '@components/exchange/Exchange'
 import { env } from '@shared/environment'
+import { BigNumber } from 'ethers'
+import { formatEther } from 'ethers/lib/utils.js'
 import { request, gql } from 'graphql-request'
 import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
@@ -39,6 +42,8 @@ export interface HistoryProps {
 }
 
 type TradeType = {
+  name: string
+  image: string
   id: string
   option: {
     id: string
@@ -53,64 +58,16 @@ type TradeType = {
   exercised: boolean
   isProfit: boolean
   pl: string
+  pnl: string
   timestamp: string
 }
 
 export const ClaimBox: FC = () => {
-  const [selectHistory, setSelectHistory] = useState<HistoryProps>()
+  const [selectHistory, setSelectHistory] = useState<TradeType>()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [data, setData] = useState<TradeType[]>([])
   const { address } = useAccount()
-  const historyList = [
-    {
-      name: 'Blue Bird Yatch Club Pool #1',
-      image: 'https://picsum.photos/200/200',
-      id: 1,
-      lockPrice: 10,
-      strikePrice: 11,
-      expiryPrice: 12,
-      pnl: 100000,
-      pnlPositive: true,
-      unit: 'bbBAYC',
-      stretegy: 'call',
-      amount: 1000,
-      premium: 1000,
-      startDate: '2023-02-27',
-      endDate: '2023-03-06',
-    },
-    {
-      name: 'Blue Bird Yatch Club Pool #2',
-      image: 'https://picsum.photos/200/200',
-      id: 2,
-      lockPrice: 10,
-      strikePrice: 11,
-      expiryPrice: 12,
-      pnl: 100000,
-      pnlPositive: true,
-      unit: 'bbBAYC',
-      stretegy: 'call',
-      amount: 1000,
-      premium: 1000,
-      startDate: '2023-02-27',
-      endDate: '2023-03-06',
-    },
-    {
-      name: 'Blue Bird Yatch Club Pool #3',
-      image: 'https://picsum.photos/200/200',
-      id: 3,
-      lockPrice: 10,
-      strikePrice: 11,
-      expiryPrice: 12,
-      pnl: 100000,
-      pnlPositive: false,
-      unit: 'bbBAYC',
-      stretegy: 'call',
-      amount: 1000,
-      premium: 1000,
-      startDate: '2023-02-27',
-      endDate: '2023-03-06',
-    },
-  ]
+
   const handleSelectHistory = (history: any) => {
     console.log(history)
     setSelectHistory(history)
@@ -129,8 +86,9 @@ export const ClaimBox: FC = () => {
         env.graphEndPoint,
         gql`
           query OwnerTrades($owner: Bytes!) {
-            trades(filter: { owner: { eq: $owner } }) {
+            trades(where: { owner: $owner }) {
               id
+              owner
               option {
                 id
                 epoch
@@ -150,10 +108,13 @@ export const ClaimBox: FC = () => {
         `,
         { owner: address },
       )
-      console.log(response, address)
       setData(
         response.trades.map((trade) => ({
           id: trade.id,
+          name:
+            (trade.option.id.toLowerCase().includes(azukiFractionalizeAddress) ? 'Azuki' : 'BBYC') +
+            'Option',
+          image: 'https://picsum.photos/200/200',
           option: {
             id: trade.option.id,
             epoch: trade.option.epoch,
@@ -167,10 +128,15 @@ export const ClaimBox: FC = () => {
           exercised: trade.exercised,
           isProfit: trade.isProfit,
           pl: trade.pl,
+          pnl: (
+            (+'12289403943000' - +trade.premium) * +trade.size -
+            +trade.size * +trade.premium
+          ).toString(),
           timestamp: trade.timestamp,
         })),
       )
     }
+
     try {
       getHistory()
       console.log(data)
@@ -200,7 +166,7 @@ export const ClaimBox: FC = () => {
         <Text fontSize="x-large" fontWeight={600}>
           History
         </Text>
-        {historyList.map((history) => (
+        {data.map((history) => (
           <VStack key={history?.id} style={CardStyle} onClick={() => handleSelectHistory(history)}>
             <Text fontSize="large" fontWeight={400}>
               {history.name}
@@ -210,33 +176,42 @@ export const ClaimBox: FC = () => {
               <Flex>
                 <Text>P&L:</Text>
 
-                {history?.pnlPositive ? (
+                {+history?.pnl > 0 ? (
                   <Text color="lightgreen">
-                    +{history.pnl}
-                    {history.unit}
+                    +{+(+formatEther(BigNumber.from(history.pnl))).toFixed(5)}
+                    {history.option.isPut ? 'ETH' : 'NFT'}
                   </Text>
                 ) : (
                   <Text color="lightpink">
-                    -{history.pnl}
-                    {history.unit}
+                    {+(+formatEther(BigNumber.from(history.pnl))).toFixed(5)}
+                    {history.option.isPut ? 'ETH' : 'NFT'}
                   </Text>
                 )}
               </Flex>
               <VStack>
                 <Flex>
                   <Text>Lock Price : </Text>
-                  <Text>{history.lockPrice} ETH</Text>
+                  <Text>
+                    {+(+formatEther(BigNumber.from(history.premium)) * 1000000).toFixed(2)} ETH
+                  </Text>
                 </Flex>
                 <Flex>
                   <Text>Strike Price : </Text>
-                  <Text>{history?.strikePrice} ETH</Text>
+                  <Text>
+                    {
+                      +(
+                        +formatEther(BigNumber.from(history?.option.strikePrice)) * 1000000
+                      ).toFixed(2)
+                    }{' '}
+                    ETH
+                  </Text>
                 </Flex>
-                <Flex>
+                {/* <Flex>
                   <Text>Expiry Price : </Text>
                   <Text>{history.expiryPrice} ETH</Text>
-                </Flex>
+                </Flex> */}
               </VStack>
-              <Text>{history.stretegy}</Text>
+              <Text>{history.option.isPut ? 'PUT' : 'CALL'}</Text>
             </HStack>
           </VStack>
         ))}
@@ -247,40 +222,55 @@ export const ClaimBox: FC = () => {
           <ModalHeader>{selectHistory?.name}</ModalHeader>
           <ModalCloseButton />
           <ModalBody display="flex" flexDirection="column" justifyContent="center" gap="5px">
-            <Text fontSize="large">
-              {selectHistory?.startDate} to {selectHistory?.endDate}
-            </Text>
+            <Flex style={FlexStyle}>
+              <Text>Epoch</Text>
+              <Text>{selectHistory?.option.epoch}</Text>
+            </Flex>
             <Flex style={FlexStyle}>
               <Text>Strategy</Text>
-              <Text>{selectHistory?.stretegy}</Text>
+              <Text>{selectHistory?.option.isPut ? 'PUT' : 'CALL'}</Text>
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Amount</Text>
-              <Text>{selectHistory?.amount}</Text>
+              <Text>{selectHistory?.size}</Text>
             </Flex>
             <Flex style={FlexStyle}>
               <Text>Premium Paid</Text>
-              <Text>{selectHistory?.premium}</Text>
+              {/* (+trade.size * +trade.premium)).toString() */}
+              {selectHistory && (
+                <Text>
+                  {formatEther(
+                    BigNumber.from((+selectHistory.premium * +selectHistory.size).toString()),
+                  )}{' '}
+                  ETH
+                </Text>
+              )}
             </Flex>
             <Flex style={FlexStyle}>
               <Text>P&L</Text>
 
-              {selectHistory?.pnlPositive ? (
+              {selectHistory?.pnl && +selectHistory?.pnl > 0 ? (
                 <Text color="lightgreen">
                   +{selectHistory?.pnl}
-                  {selectHistory?.unit}
+                  {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                 </Text>
               ) : (
                 <Text color="lightpink">
-                  -{selectHistory?.pnl}
-                  {selectHistory?.unit}
+                  {+(+formatEther(BigNumber.from(selectHistory?.pnl))).toFixed(2)}
+                  {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                 </Text>
               )}
             </Flex>
           </ModalBody>
 
           <ModalFooter>
-            <Button width="100%" colorScheme="blue" mr={3} onClick={onhandleClaim}>
+            <Button
+              disabled={!!(selectHistory?.pnl && +selectHistory?.pnl < 0)}
+              width="100%"
+              colorScheme="blue"
+              mr={3}
+              onClick={onhandleClaim}
+            >
               Claim
             </Button>
           </ModalFooter>
