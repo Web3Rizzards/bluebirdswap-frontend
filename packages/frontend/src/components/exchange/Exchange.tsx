@@ -132,7 +132,7 @@ export const Exchange: FC<ExchangeProps> = ({
       const response: {
         priceDatas: PriceResponse[]
       } = await request(
-        env.graphEndPoint,
+        'https://api.studio.thegraph.com/query/43349/chainlink-nft-floor-price/v0.0.2',
         gql`
           query LatestPriceData {
             priceDatas(orderBy: roundId, orderDirection: desc, first: 168) {
