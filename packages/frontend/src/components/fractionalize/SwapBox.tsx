@@ -1,4 +1,20 @@
-import { Box, Button, Flex, HStack, Select, Text, VStack } from '@chakra-ui/react'
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Box,
+  Button,
+  Flex,
+  HStack,
+  Select,
+  Text,
+  VStack,
+  useDisclosure,
+} from '@chakra-ui/react'
 import { ChevronDownIcon } from '@chakra-ui/icons'
 import { request, gql } from 'graphql-request'
 import { FC, useEffect, useState } from 'react'
@@ -31,9 +47,10 @@ type Token = {
 }
 
 import { azukiAddress, grinderAddress, nftAddress } from '@components/exchange/Exchange'
+import { env } from '@shared/environment'
 
 export const SwapBox: FC = () => {
-  // TODO: connect with the backend
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const [nftName, setNftName] = useState('#')
   const [nftList, setData] = useState<CollectionResponse[]>([])
   const [tokenList, setTokenList] = useState<Token[]>([])
@@ -109,7 +126,7 @@ export const SwapBox: FC = () => {
       const response: {
         collections: CollectionResponse[]
       } = await request(
-        'https://api.studio.thegraph.com/query/43349/bluebird-swap-goerli/v1.0.0',
+        env.graphEndPoint,
         gql`
           query getCollection {
             collections {
@@ -171,13 +188,15 @@ export const SwapBox: FC = () => {
               </option>
             ))}
           </Select>
-          <Select placeholder="Select Token ID" onChange={handleSelectId}>
-            {tokenList.map((token) => (
-              <option value={token.tokenId} key={token.tokenId}>
-                {token.tokenId}
-              </option>
-            ))}
-          </Select>
+          {nftName !== '#' && (
+            <Select placeholder="Select Token ID" onChange={handleSelectId}>
+              {tokenList.map((token) => (
+                <option value={token.tokenId} key={token.tokenId}>
+                  {token.tokenId}
+                </option>
+              ))}
+            </Select>
+          )}
         </Flex>
         <Box
           padding="0px 9px"
@@ -241,6 +260,44 @@ export const SwapBox: FC = () => {
           </Button>
         )}
       </VStack>
+      {approveLoading ? <ApprovalModal /> : <SwapModal />}
     </>
+  )
+}
+
+const ApprovalModal: FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent top="19%" height="50%">
+        <ModalBody
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          gap="5px"
+        ></ModalBody>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+const SwapModal: FC = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent top="19%" height="50%">
+        <ModalBody display="flex" flexDirection="column" justifyContent="center" gap="5px">
+          wait for swap
+        </ModalBody>
+
+        <ModalFooter>
+          <Button width="100%" colorScheme="blue" mr={3}>
+            Claim
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }
