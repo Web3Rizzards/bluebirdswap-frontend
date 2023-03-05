@@ -24,4 +24,5 @@ export const env = {
     80001: process.env.NEXT_PUBLIC_RPC_80001!, // Mumbai
   },
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID,
+  graphEndPoint: process.env.NEXT_PUBLIC_GRAPH_END_POINT || '',
 }

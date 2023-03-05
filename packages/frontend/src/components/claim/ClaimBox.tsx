@@ -14,10 +14,12 @@ import {
   VStack,
   useDisclosure,
 } from '@chakra-ui/react'
+import { env } from '@shared/environment'
 import { request, gql } from 'graphql-request'
 import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
 import 'twin.macro'
+import { useAccount } from 'wagmi'
 
 export interface HistoryProps {
   name: string
@@ -58,6 +60,7 @@ export const ClaimBox: FC = () => {
   const [selectHistory, setSelectHistory] = useState<HistoryProps>()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [data, setData] = useState<TradeType[]>([])
+  const { address } = useAccount()
   const historyList = [
     {
       name: 'Blue Bird Yatch Club Pool #1',
@@ -121,9 +124,9 @@ export const ClaimBox: FC = () => {
   useEffect(() => {
     const getHistory = async () => {
       const response: {
-        ownerTrades: TradeType[]
+        trades: TradeType[]
       } = await request(
-        'https://api.studio.thegraph.com/query/43349/chainlink-nft-floor-price/v0.0.2',
+        env.graphEndPoint,
         gql`
           query OwnerTrades($owner: Bytes!) {
             trades(filter: { owner: { eq: $owner } }) {
@@ -145,10 +148,11 @@ export const ClaimBox: FC = () => {
             }
           }
         `,
-        {},
+        { owner: address },
       )
+      console.log(response, address)
       setData(
-        response.ownerTrades.map((trade) => ({
+        response.trades.map((trade) => ({
           id: trade.id,
           option: {
             id: trade.option.id,
