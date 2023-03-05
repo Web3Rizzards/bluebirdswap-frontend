@@ -306,14 +306,14 @@ export const Exchange: FC<ExchangeProps> = ({
             <Text fontWeight={'700'}>Strategy</Text>
             <Text fontWeight={'700'}>{type?.isPut ? 'puts' : 'calls'}</Text>
           </Flex>
-          <Flex justifyContent={'space-between'}>
+          {/* <Flex justifyContent={'space-between'}>
             <Text fontWeight={'700'}>Profit Zone</Text>
             <Text fontWeight={'700'}>{(!type?.isPut ? '> ' : '< ') + profit.toString()}</Text>
           </Flex>
           <Flex justifyContent={'space-between'}>
             <Text fontWeight={'700'}>Max Loss Zone</Text>
             <Text fontWeight={'700'}>{(!type?.isPut ? '< ' : '> ') + loss.toString()}</Text>
-          </Flex>
+          </Flex> */}
         </Box>
 
         <Flex justifyContent={'space-between'}>

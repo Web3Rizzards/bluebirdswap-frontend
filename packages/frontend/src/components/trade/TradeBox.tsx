@@ -24,49 +24,19 @@ export const TradeBox: FC = () => {
       name: 'Blue Bird Yatch Club Pool',
       image: 'https://picsum.photos/200/200',
       id: 1,
-      call: 70,
-      put: 30,
-      expired: 1277857432,
-    },
-    {
-      name: 'Red Bird Yatch Club Pool',
-      image: 'https://picsum.photos/200/200',
-      id: 2,
-      call: 60,
-      put: 40,
-      expired: 1677857432,
-    },
-    {
-      name: 'Gray Bird Yatch Club Pool',
-      image: 'https://picsum.photos/200/200',
-      id: 3,
-      call: 20,
-      put: 80,
-      expired: 1677857432,
-    },
-    {
-      name: 'Gray2 Bird Yatch Club Pool',
-      image: 'https://picsum.photos/200/200',
-      id: 4,
-      call: 70,
-      put: 30,
-      expired: 1677857432,
-    },
-    {
-      name: 'Gray3 Bird Yatch Club Pool',
-      image: 'https://picsum.photos/200/200',
-      id: 5,
       call: 50,
       put: 50,
-      expired: 1667857432,
+      expired: 1277857432,
+      link: '/buybbyc',
     },
     {
-      name: 'Gray4 Bird Yatch Club Pool',
+      name: 'Azuki Pool',
       image: 'https://picsum.photos/200/200',
-      id: 6,
-      call: 90,
-      put: 10,
-      expired: 1677857432,
+      id: 1,
+      call: 50,
+      put: 50,
+      expired: 1277857432,
+      link: '/buyazuki',
     },
   ]
 
@@ -101,7 +71,7 @@ export const TradeBox: FC = () => {
               borderRadius="13px"
               key={pool.id}
             >
-              <Link href="/buy">
+              <Link href={pool.link}>
                 <Text>Time left : {distances.get(pool.id)}</Text>
                 <VStack cursor="pointer" onClick={() => console.log('hh')}>
                   <Text fontWeight="700" fontSize="large">
