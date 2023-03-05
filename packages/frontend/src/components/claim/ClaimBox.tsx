@@ -74,7 +74,7 @@ export const ClaimBox: FC = () => {
     setSelectHistory(history)
     onOpen()
   }
-
+  console.log(selectHistory?.option.id)
   const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
     abi: optionABI,
     address: optionsAddress,
@@ -141,7 +141,7 @@ export const ClaimBox: FC = () => {
           isProfit: trade.isProfit,
           pl: trade.pl,
           pnl: (
-            (+'12289403943000' - +trade.premium) * (+trade.size / 1000000000000000000) -
+            (+'20000000000000' - +trade.premium) * (+trade.size / 1000000000000000000) -
             (+trade.size / 1000000000000000000) * +trade.premium
           ).toString(),
           timestamp: trade.timestamp,
@@ -187,10 +187,10 @@ export const ClaimBox: FC = () => {
               <Flex>
                 <Text>P&L:</Text>
 
-                {+history?.pnl > 0 ? (
+                {+history?.pnl < 0 ? (
                   <Text color="lightgreen">
-                    +{history.pnl}
-                    {history.option.isPut ? 'ETH' : 'NFT'}
+                    {(-1 * history.pnl) / 1000000000000000000}
+                    {history?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ) : (
                   <Text color="lightpink">
@@ -266,9 +266,9 @@ export const ClaimBox: FC = () => {
               <Text>P&L</Text>
 
               {selectHistory &&
-                (selectHistory?.pnl && +selectHistory?.pnl > 0 ? (
+                (selectHistory?.pnl && +selectHistory?.pnl < 0 ? (
                   <Text color="lightgreen">
-                    +{+(+formatEther(BigNumber.from(selectHistory.pnl))).toFixed(5)}
+                    {(-1 * selectHistory.pnl) / 1000000000000000000}
                     {selectHistory?.option.isPut ? ' ETH' : ' NFT'}
                   </Text>
                 ) : (

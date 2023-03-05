@@ -31,6 +31,7 @@ import {
   azukiFractionalizeAddress,
   azukiOptionsAddress,
   fractionalizeAddress,
+  grinderAddress,
   nftAddress,
   optionsAddress,
 } from '@components/exchange/Exchange'
@@ -78,14 +79,14 @@ export const StakeBox: FC = () => {
     address: selectedPool?.tokenAddress,
     abi: erc20ABI,
     functionName: 'allowance',
-    args: [address ?? '0x', (selectedPool?.address as any) ?? '0x'],
+    args: [address ?? '0x', (grinderAddress as any) ?? '0x'],
   })
 
   const { config: allowanceConfig, error: approveError } = usePrepareContractWrite({
     abi: erc20ABI,
     address: selectedPool?.tokenAddress,
     functionName: 'approve',
-    args: [(selectedPool?.address as any) ?? '0x', parseEther('1000000000000000')],
+    args: [(grinderAddress as any) ?? '0x', parseEther('1000000000000000')],
   })
   const { write: approve, isLoading: approveLoading } = useContractWrite(allowanceConfig)
 
@@ -243,7 +244,7 @@ export const StakeBox: FC = () => {
                   <option>ETH</option>
                   <option>{pool.symbol}</option>
                 </Select>
-                {allowance?.eq(BigNumber.from('0')) ? (
+                {allowance?.lt(BigNumber.from('100000000')) ? (
                   <Button
                     isLoading={approveLoading}
                     onClick={() => handleApprove()}

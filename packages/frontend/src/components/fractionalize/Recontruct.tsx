@@ -87,8 +87,6 @@ export const Reconstruct: FC = () => {
     args: [grinderAddress, true],
   })
 
-  const { write: approveNft, isLoading: approveLoading } = useContractWrite(nftConfig)
-
   const handleSelectNFT = async (e: any) => {
     const nft = e.target.value
     setNftName(nft)
@@ -116,15 +114,11 @@ export const Reconstruct: FC = () => {
 
   const handleSelectId = async (e: any) => {
     const tokenId = e.target.value
-    setSelectedToken(10)
+    setSelectedToken(tokenId)
   }
 
-  const fractionalise = async () => {
+  const reconstructfunction = async () => {
     write?.()
-  }
-
-  const approve = () => {
-    approveNft?.()
   }
 
   useEffect(() => {
@@ -196,7 +190,13 @@ export const Reconstruct: FC = () => {
           </Select>
           {nftName !== '#' && (
             <Select placeholder="Select Token ID" onChange={handleSelectId}>
-              {tokenList.map((token) => (
+              {[
+                { tokenId: 10 },
+                { tokenId: 9 },
+                { tokenId: 8 },
+                { tokenId: 4 },
+                { tokenId: 11 },
+              ].map((token) => (
                 <option value={token.tokenId} key={token.tokenId}>
                   {token.tokenId}
                 </option>
@@ -225,32 +225,30 @@ export const Reconstruct: FC = () => {
           justifyContent="start"
         >
           <Text>
-            1,000,000{' '}
+            1{' '}
             {nftList.find((nft) => nft.id === nftName)
               ? nftList.find((nft) => nft.id === nftName)?.name
               : ''}
             #{selectedToken}
           </Text>
         </Flex>
-        {
-          <Button
-            isLoading={grindLoading}
-            onClick={() => {
-              fractionalise()
-            }}
-            background="#4A99E9"
-            width="100%"
-            borderRadius="16px"
-            padding="30px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text>Swap</Text>
-          </Button>
-        }
+
+        <Button
+          isLoading={grindLoading}
+          onClick={() => {
+            reconstructfunction()
+          }}
+          background="#4A99E9"
+          width="100%"
+          borderRadius="16px"
+          padding="30px"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Text>Reconstruct</Text>
+        </Button>
       </VStack>
-      {approveLoading ? <ApprovalModal /> : <SwapModal />}
     </>
   )
 }
